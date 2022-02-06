@@ -189,7 +189,18 @@
 
 
           </div>
-          
+          <head>
+    <script src="//cdn.jsdelivr.net/npm/@waline/client"></script>
+</head>
+<body>
+  <div id="waline"></div>
+  <script>
+    Waline({
+      el: '#waline',
+      serverURL: 'https://blog-api-54s4-oy8ks0oof-jplay.vercel.app/',
+    });
+  </script>
+</body>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -348,35 +359,6 @@
   
 
   
-
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.3.4/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el         : '#valine-comments',
-      verify     : false,
-      notify     : false,
-      appId      : 'NhIi4pH0Ox6O5aEFye0IhKe6-gzGzoHsz',
-      appKey     : 'wOUoBpOCbEwEahDwTc2JeLVT',
-      placeholder: "Just go go",
-      avatar     : 'mm',
-      meta       : guest,
-      pageSize   : '10' || 10,
-      visitor    : false,
-      lang       : '' || 'zh-cn',
-      path       : location.pathname,
-      recordIP   : false,
-      serverURLs : 'https://NhIi4pH0.api.lncldglobal.com'
-    });
-  }, window.Valine);
-});
-</script>
 
 </body>
 </html>
