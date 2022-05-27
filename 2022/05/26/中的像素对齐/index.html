@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://s2.loli.net/2022/05/26/UPa8hnF3i7rl4Vg.png">
 <meta property="og:image" content="https://s2.loli.net/2022/05/26/pLQhZSEP4k8NoJY.png">
 <meta property="article:published_time" content="2022-05-26T08:16:39.000Z">
-<meta property="article:modified_time" content="2022-05-26T15:11:07.037Z">
+<meta property="article:modified_time" content="2022-05-27T01:57:41.739Z">
 <meta property="article:author" content="JPlay">
 <meta property="article:tag" content="知识点">
 <meta name="twitter:card" content="summary">
@@ -183,10 +183,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2022-05-26 16:16:39 / Modified: 23:11:07" itemprop="dateCreated datePublished" datetime="2022-05-26T16:16:39+08:00">2022-05-26</time>
+              <time title="Created: 2022-05-26 16:16:39" itemprop="dateCreated datePublished" datetime="2022-05-26T16:16:39+08:00">2022-05-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-05-27 09:57:41" itemprop="dateModified" datetime="2022-05-27T09:57:41+08:00">2022-05-27</time>
+              </span>
 
           
 
@@ -215,13 +221,13 @@
 <h3 id="为什么会糊"><a href="#为什么会糊" class="headerlink" title="为什么会糊"></a>为什么会糊</h3><p>让我们再进一步调查一下为什么会糊？<br>之前有个普遍猜想，当我们设置 x 为 100.1 或者 100.9 的时候，系统会自动帮我们取整数像素单位来显示，这对吗？<br>对的，但是跟我们想的可能有点不一样。<br>我们来对比一下 (100.1, 100, 300, 500) vs (100.9, 100, 300, 500)：<br><img src="https://s2.loli.net/2022/05/26/vJ7abZMVSXmRlfh.png" width=400 /> 我们可以很显著的发现，最左边那条竖线的颜色不一致，这是为什么呢？<br>先用苹果官方的话来解释一下：<br><img src="https://s2.loli.net/2022/05/26/x3ufVHeiWANzQjy.png">简单理解一下就是，<strong>如果你非得从 0.5 像素的位置开始画线，系统也会帮你画，只是会触发抗锯齿（antialiasing），也就是会帮你把半个像素补齐到一个像素</strong>。</p>
 <p>补齐规则是什么呢？<br>苹果没说，我根据试验结论猜测一下：根据<strong>该像素的占用面积的比例乘上原始颜色渲染出一个新的像素</strong>，比如苹果这个示例中就是 0.5 * 黑色，得出一个灰色。<br>结合上述论证与猜想，可以推测出上面文字 100.1 vs 100.9 竖线颜色不一的问题了。<br><img src="https://s2.loli.net/2022/05/26/bDFTLwPx1WG2XlS.png">根据我们前面的推测，100.1 占了 90% 像素面积，于是就是 90% 颜色深度，而 100.9 占了 10% 像素面积，也就是 10% 颜色深度。<br>所以，肉眼可见 100.1 比 100.9 深了许多。</p>
 <h3 id="其他视图"><a href="#其他视图" class="headerlink" title="其他视图"></a>其他视图</h3><p>如果去尝试其他视图的情况，可以发现 UIImageView，UIButton 只要设置了图片或文字，都会有上述情况。<br>一个 UIView 只设置了背景颜色，那么像素不对齐也不会有什么问题。但是，用 CoreGraphics 画上一条蓝线，就会出现问题了。<br><img src="https://s2.loli.net/2022/05/26/FArqwfJEseNhdgR.png">所以得出结论：<strong>UIView 在有内容的情况下，像素不对齐就会触发抗锯齿，就会导致模糊现象。如果没有内容，只是设置了背景色则不会有问题。</strong></p>
-<h2 id="CoreGraphics-的像素对齐"><a href="#CoreGraphics-的像素对齐" class="headerlink" title="CoreGraphics 的像素对齐"></a>CoreGraphics 的像素对齐</h2><p>CoreGraphics 的像素对齐问题，又是什么情况呢？<br>假设我们用 CoreGraphics 在 (3, 0 ) 到 (3, 5) 画一条一像素宽的线时，这条线会落在哪里？<br>让我们魔改一下苹果的原图，会更好理解：<br><img src="https://s2.loli.net/2022/05/26/UPa8hnF3i7rl4Vg.png" width=400 /> 半个像素，是不是想起了什么？没错，触发了抗锯齿，于是你的一像素黑线变成了二像素灰线。<br>怎么解决呢？有两个方法：</p>
+<h2 id="CoreGraphics-的像素对齐"><a href="#CoreGraphics-的像素对齐" class="headerlink" title="CoreGraphics 的像素对齐"></a>CoreGraphics 的像素对齐</h2><p>CoreGraphics 的像素对齐问题，又是什么情况呢？<br>假设我们用 CoreGraphics 在 (3, 0 ) 到 (3, 5) 画一条一像素宽的线时，这条线会落在哪里？<br>让我们魔改一下苹果的原图，会更好理解：<br><img src="https://s2.loli.net/2022/05/26/UPa8hnF3i7rl4Vg.png" width=400 /> 很明显，一倍屏的情况下，是在第三个点（point）上左右平分半个像素。<br>半个像素，是不是想起了什么？没错，触发了抗锯齿，于是你的一像素黑线变成了二像素灰线。<br>怎么解决呢？有两个方法：</p>
 <ol>
 <li>向左或向右移动半个像素，在不同屏幕下通用公式是： ±(1 / screenScale / 2)</li>
 <li>把线的宽度补齐到两个像素，这样你会获得一条两个像素的黑线</li>
 </ol>
 <p>推广一下：<strong>使用 CoreGraphics 绘制奇数像素宽/高度线的时候，像素不对齐，会触发抗锯齿，导致模糊。</strong></p>
-<p>注意，偶数宽/高度的情况下，因为绘制内容会均匀地落在坐标两边的像素点中，不需要也不能去做奇数时的处理方案。<br>再来魔改一下苹果的图，方便大家理解偶数的情况：<br><img src="https://s2.loli.net/2022/05/26/pLQhZSEP4k8NoJY.png" width=400 />因为 CoreGraphics 画线的时候在宽度上是没有方向性的，所以在 x 点画一条线的时候，是以 x 为中线，左右平均分配线宽。<br>而 UIView 在布局的时候是有坐标系的，当我们指定一个 (3, 0, 1, 10) 的矩形框的时候（一倍屏），可以准确地在 3 像素开始向右边画出一个一像素宽的矩形（也就是一像素线）。</p>
+<p>注意，偶数宽/高度的情况下，因为绘制内容会均匀地落在坐标两边的像素点中，不需要也不能去做奇数时的处理方案。<br>再来魔改一下苹果的图，方便大家理解偶数的情况：<br><img src="https://s2.loli.net/2022/05/26/pLQhZSEP4k8NoJY.png" width=400 />最终还有一个点容易搞错，CoreGraphics 绘制问题不要运用到 UIView 体系中。<br>因为 CoreGraphics 画线的时候在宽度上是没有方向性的，所以在 x 点画一条线的时候，是以 x 为中线，左右平均分配线宽。<br>而 UIView 在布局的时候是有坐标系的，当我们指定一个 (3, 0, 1, 10) 的矩形框的时候（一倍屏），可以准确地在 3 像素开始向右边画出一个一像素宽的矩形（也就是一像素线）。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>所以，再次提炼一下「像素对齐」：当我们绘制视图时，应该让内容填满像素格。否则会触发了抗锯齿，可能导致内容模糊。</p>
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><em><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html">iOS Drawing Concepts</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/smileevday/p/ios_pixelvspoint.html">iOS 绘制1像素的线</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/432fea0232b8">iOS优化：解决iOS中像素不对齐问题</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/38cf9c170141">iOS Color Misaligned Images优化</a><br><a target="_blank" rel="noopener" href="https://alistra.ghost.io/2014/10/01/aligned-uiviews/">Aligned UIViews</a></em></p>
 
