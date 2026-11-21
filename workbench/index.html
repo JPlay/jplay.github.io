@@ -1,0 +1,3472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workbench — 让系统在余光里安静运转</title>
+  <meta name="description" content="个人多 Agent 任务工作台与原生 iPhone 伴侣。把多 Agent 协作收进屏幕底栏的一行彩点，把注意力留给深度思考。" />
+  <style>
+    /* ==========================================================================
+       Exact WB Design Tokens (from WorkbenchTheme.swift & wb-claude-bar/ui.js)
+       Neutral grayscale; only the four semantic dots carry color.
+       ========================================================================== */
+    :root {
+      --bg: #fcfcfc;
+      --bg-subtle: #f5f5f4;
+      --surface: #f3f3f3;
+      --surface2: #e8e8e8;
+      --sheet: #ffffff;
+      --chrome: #f6f6f5;
+
+      --fg: #0d0d0d;
+      --fg2: #5d5d5d;
+      --fg3: #8f8f8f;
+      --line: rgba(0, 0, 0, 0.065);
+      --line-strong: rgba(0, 0, 0, 0.13);
+
+      --primary: #0d0d0d;
+      --on-primary: #ffffff;
+
+      /* Signature Four-Color Semantic Grammar */
+      --you: #d9a233;
+      --you-bg: rgba(229, 180, 84, 0.14);
+      --you-border: rgba(229, 180, 84, 0.36);
+      --work: #3f86ee;
+      --work-bg: rgba(63, 134, 238, 0.12);
+      --wait: #8b6cf0;
+      --wait-bg: rgba(139, 108, 240, 0.12);
+      --done: #a3a3a3;
+      --bad: #e5484d;
+      --ok: #2da44e;
+
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.04);
+      --shadow-window: 0 36px 90px -16px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      --shadow-pop: 0 20px 50px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --max-w: 1120px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0e0e0e;
+      --bg-subtle: #141416;
+      --surface: #212121;
+      --surface2: #2e2e2e;
+      --sheet: #181818;
+      --chrome: #141416;
+
+      --fg: #ededed;
+      --fg2: #cdcdcd;
+      --fg3: #8f8f8f;
+      --line: rgba(255, 255, 255, 0.075);
+      --line-strong: rgba(255, 255, 255, 0.15);
+
+      --primary: #ededed;
+      --on-primary: #0d0d0d;
+
+      --you: #e5b454;
+      --you-bg: rgba(229, 180, 84, 0.13);
+      --you-border: rgba(229, 180, 84, 0.34);
+      --work: #5b9cf5;
+      --work-bg: rgba(91, 156, 245, 0.15);
+      --wait: #a78bfa;
+      --wait-bg: rgba(167, 139, 250, 0.15);
+      --done: #7a7a7a;
+      --bad: #ff5d5d;
+      --ok: #3fb950;
+
+      --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.32);
+      --shadow-md: 0 18px 44px rgba(0, 0, 0, 0.52);
+      --shadow-window: 0 42px 110px -16px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      --shadow-pop: 0 24px 60px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.11);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.3s var(--ease), color 0.3s var(--ease);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+    .mono { font-family: var(--font-mono); }
+
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 104px 0; }
+    .divider { height: 1px; background: var(--line); max-width: var(--max-w); margin: 0 auto; }
+
+    /* Typography — Short, Crisp, Editorial */
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fg3);
+      margin-bottom: 12px;
+    }
+
+    .h1 {
+      font-size: clamp(36px, 5.2vw, 60px);
+      font-weight: 650;
+      line-height: 1.12;
+      letter-spacing: -0.032em;
+    }
+
+    .h2 {
+      font-size: clamp(26px, 3.3vw, 38px);
+      font-weight: 620;
+      line-height: 1.18;
+      letter-spacing: -0.026em;
+    }
+
+    .sub {
+      font-size: clamp(15.5px, 1.5vw, 17.5px);
+      color: var(--fg2);
+      line-height: 1.65;
+      margin-top: 14px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       Real Semantic Dot Component (matches ui.js dot() & WBDot)
+       ========================================================================== */
+    .wb-dot-box {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .wb-dot-ring {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      transition: all 0.22s var(--ease);
+    }
+    .wb-dot-ring.ring-solid {
+      width: 15px;
+      height: 15px;
+      border: 1.3px solid var(--fg);
+    }
+    .wb-dot-ring.ring-dashed {
+      width: 15px;
+      height: 15px;
+      border: 1.3px dashed var(--fg);
+      animation: spinSlow 6s linear infinite;
+    }
+    .wb-dot-ring.ios-ring-solid {
+      width: 16px;
+      height: 16px;
+      border: 1.4px solid currentColor;
+    }
+    .wb-dot-ring.ios-ring-dashed {
+      width: 16px;
+      height: 16px;
+      border: 1.4px dashed currentColor;
+    }
+
+    @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+    .wb-dot-core {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .c-you  { background: var(--you); color: var(--you); }
+    .c-work { background: var(--work); color: var(--work); }
+    .c-wait { background: var(--wait); color: var(--wait); }
+    .c-done { background: var(--done); color: var(--done); }
+
+    .t-you  { color: var(--you); }
+    .t-work { color: var(--work); }
+    .t-wait { color: var(--wait); }
+    .t-done { color: var(--fg3); }
+
+    .wb-dot-bub {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--bad);
+      box-shadow: 0 0 0 1.4px var(--chrome);
+    }
+
+    /* ==========================================================================
+       Top Nav
+       ========================================================================== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      background: color-mix(in srgb, var(--bg) 84%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 14.5px;
+      font-weight: 620;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-dots {
+      display: grid;
+      grid-template-columns: repeat(2, 5px);
+      gap: 2.5px;
+      padding: 4px;
+      border-radius: 6px;
+      border: 1px solid var(--line-strong);
+      background: var(--sheet);
+    }
+    .brand-dots i { width: 5px; height: 5px; border-radius: 50%; display: block; }
+
+    .nav-links {
+      display: flex;
+      gap: 26px;
+      font-size: 13px;
+      color: var(--fg2);
+    }
+    .nav-links a:hover { color: var(--fg); }
+
+    .theme-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--sheet);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg2);
+    }
+    .theme-btn:hover { color: var(--fg); }
+    .theme-btn svg { width: 14px; height: 14px; }
+    .i-sun { display: none; }
+    [data-theme="dark"] .i-sun { display: block; }
+    [data-theme="dark"] .i-moon { display: none; }
+
+    /* ==========================================================================
+       Section 1: Hero + Real Desktop Workbench Replica
+       ========================================================================== */
+    .hero { padding: 68px 0 88px; }
+
+    .hero-head {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 44px;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--sheet);
+      font-size: 12.5px;
+      color: var(--fg2);
+      margin-bottom: 22px;
+    }
+    .hero-pill .mini-dots { display: inline-flex; gap: 5px; }
+    .hero-pill .mini-dots span { width: 6.5px; height: 6.5px; border-radius: 50%; }
+
+    .demo-caption {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--fg3);
+      margin-bottom: 12px;
+    }
+    .demo-caption kbd {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--line-strong);
+      background: var(--sheet);
+      color: var(--fg2);
+    }
+
+    /* Authentic Herdr.app + wb-claude-bar + wb-mrs Desktop Frame */
+    .desk-wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .desk-win {
+      border-radius: 14px;
+      background: var(--bg);
+      box-shadow: var(--shadow-window);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 580px;
+    }
+
+    .desk-top {
+      height: 38px;
+      padding: 0 12px;
+      background: var(--chrome);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .desk-lights { display: flex; gap: 7px; width: 76px; }
+    .desk-lights span { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
+
+    .desk-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .desk-tab {
+      height: 26px;
+      padding: 0 11px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--fg3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .desk-tab:hover { background: var(--surface); color: var(--fg2); }
+    .desk-tab.active { background: var(--sheet); color: var(--fg); font-weight: 500; box-shadow: var(--shadow-sm); }
+
+    /* Real wb-mr-button */
+    .wb-mr-btn {
+      height: 26px;
+      padding: 0 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--fg2);
+      transition: background 0.15s, color 0.15s;
+    }
+    .wb-mr-btn:hover, .wb-mr-btn.active { background: var(--surface); color: var(--fg); }
+    .wb-mr-badge {
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 8px;
+      background: #e5b454;
+      color: #1b1b1b;
+      font-size: 10.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .desk-main {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .desk-side {
+      width: 210px;
+      flex-shrink: 0;
+      background: var(--chrome);
+      border-right: 1px solid var(--line);
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    .side-sec {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--fg3);
+      padding: 0 8px 4px;
+    }
+
+    .side-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 12px;
+      color: var(--fg2);
+      text-align: left;
+      gap: 6px;
+    }
+    .side-row:hover { background: var(--surface); color: var(--fg); }
+    .side-row.active { background: var(--sheet); color: var(--fg); font-weight: 500; box-shadow: var(--shadow-sm); }
+    .side-row .s-meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg3); }
+
+    .desk-stage {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 32px;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--bg);
+    }
+
+    .term-user {
+      align-self: flex-end;
+      max-width: 72%;
+      background: var(--surface);
+      padding: 9px 15px;
+      border-radius: 18px;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+
+    .term-agent {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--fg);
+      max-width: 680px;
+    }
+    .term-agent p + p { margin-top: 10px; }
+
+    .code-box {
+      margin-top: 10px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+    .code-box-top {
+      padding: 7px 13px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      color: var(--fg3);
+      font-size: 11px;
+    }
+    .code-box pre {
+      padding: 10px 13px;
+      color: var(--fg2);
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+
+    /* Real wb-mrs Right Drawer */
+    .mr-drawer {
+      width: 0;
+      overflow: hidden;
+      background: var(--chrome);
+      border-left: 0 solid var(--line);
+      transition: width 0.25s var(--ease), border-width 0.25s;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .mr-drawer.open { width: 256px; border-left-width: 1px; }
+    .mr-drawer-inner { width: 256px; padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+    .mr-group-title { font-size: 11px; font-weight: 600; color: var(--fg3); display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .mr-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .mr-item-title { font-weight: 500; color: var(--fg); line-height: 1.35; }
+    .mr-item-meta { font-size: 11px; color: var(--fg3); margin-top: 3px; font-family: var(--font-mono); }
+
+    /* Floating Terminal Peek (Real「查看」behavior — does not take over!) */
+    .term-peek {
+      position: absolute;
+      inset: 28px 36px 46px 36px;
+      background: #111113;
+      color: #e4e4e7;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: var(--shadow-pop);
+      z-index: 32;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+    .term-peek.open { display: flex; animation: popIn 0.2s var(--ease); }
+    .term-peek-bar {
+      padding: 8px 12px;
+      background: #1b1b1f;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-sans);
+      font-size: 12px;
+    }
+    .term-peek-body { padding: 14px 16px; line-height: 1.75; color: #c4c4cc; overflow-y: auto; flex: 1; }
+
+    /* Real wb-claude-bar Floating Card (Peek -> Move-in reveals Action Bar) */
+    .wb-pop {
+      position: absolute;
+      bottom: 40px;
+      left: 16px;
+      width: 424px;
+      max-width: calc(100% - 24px);
+      max-height: 460px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      box-shadow: var(--shadow-pop);
+      padding: 14px;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate3d(var(--dx, 0px), 6px, 0);
+      transition: opacity 0.17s ease-out, transform 0.22s var(--ease), left 0.22s var(--ease);
+    }
+    .wb-pop.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .pop-head-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+    }
+    .pop-head-meta {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--fg3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pop-title {
+      padding-top: 7px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--fg);
+      line-height: 1.35;
+    }
+    .pop-prog {
+      padding-top: 4px;
+      font-size: 12.2px;
+      line-height: 1.55;
+      color: var(--fg2);
+    }
+    .pop-ask {
+      margin-top: 9px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: var(--you-bg);
+      border: 1px solid var(--you-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12.3px;
+      line-height: 1.55;
+    }
+    .pop-ask-lbl { font-size: 11.5px; font-weight: 600; color: var(--you); flex-shrink: 0; }
+
+    .pop-thread {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      overflow-y: auto;
+      max-height: 185px;
+    }
+
+    /* Real ui.js chatRow(): user right bubble, manager left bordered bubble, ✓/≈ compact rows */
+    .cr-sys {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 11.6px;
+      line-height: 1.48;
+      padding: 0 2px;
+    }
+    .cr-mark { width: 11px; flex-shrink: 0; font-family: var(--font-mono); color: var(--fg3); }
+    .cr-mark.ok { color: var(--ok); }
+    .cr-txt { flex: 1; color: var(--fg2); }
+    .cr-txt.dim { color: var(--fg3); }
+    .cr-time { font-size: 10.5px; color: var(--fg3); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+    .cr-bubble-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .cr-bubble-row.me { justify-content: flex-end; }
+    .cr-bubble {
+      max-width: 80%;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12.2px;
+      line-height: 1.5;
+      color: var(--fg);
+      background: var(--bg);
+      border: 1px solid var(--line-strong);
+    }
+    .cr-bubble-row.me .cr-bubble {
+      background: var(--surface);
+      border-color: transparent;
+    }
+
+    /* Real slide-out Action Bar (height 0 -> 42px on move-in or click) */
+    .pop-bar {
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: height 0.22s ease-in-out, opacity 0.2s ease-out;
+    }
+    .wb-pop.bar-open .pop-bar {
+      height: 42px;
+      opacity: 1;
+      padding-top: 10px;
+    }
+
+    .pop-inp {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      padding: 0 9px;
+      border-radius: 7px;
+      border: 1px solid var(--line-strong);
+      background: var(--bg);
+      color: var(--fg);
+      font-size: 12.3px;
+      font-family: inherit;
+      outline: none;
+    }
+    .pop-inp:focus { border-color: var(--fg); }
+
+    .wb-btn {
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 7px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--fg);
+      font-size: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+    }
+    .wb-btn:hover { opacity: 0.85; }
+    .wb-btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+    .wb-btn.armed { background: var(--bad); color: #fff; border-color: var(--bad); }
+    .wb-btn.round { width: 30px; padding: 0; border-radius: 15px; font-size: 14px; color: var(--fg2); }
+    .wb-btn.round:hover { color: var(--ok); border-color: var(--ok); }
+    .wb-btn:disabled { opacity: 0.45; cursor: default; }
+
+    .pop-hint {
+      font-size: 10.5px;
+      color: var(--fg3);
+      padding-top: 6px;
+    }
+
+    /* Real ⌘K List Overlay (renderList) */
+    .wb-list-pop {
+      position: absolute;
+      right: 12px;
+      bottom: 40px;
+      width: 460px;
+      max-width: calc(100% - 24px);
+      max-height: 440px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      box-shadow: var(--shadow-pop);
+      z-index: 45;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .wb-list-pop.open { display: flex; animation: popIn 0.18s var(--ease); }
+    @keyframes popIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .list-head {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    .list-scroll { padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+    .list-row {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      text-align: left;
+    }
+    .list-row:hover { background: var(--surface); }
+    .list-fold {
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      color: var(--fg3);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .list-fold:hover { background: var(--surface); color: var(--fg2); }
+    .list-subitem {
+      padding: 5px 10px 5px 24px;
+      font-size: 11.8px;
+      color: var(--fg2);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* Real Full Manager Modal (renderMain) */
+    .wb-main-modal {
+      position: absolute;
+      left: 16px;
+      bottom: 40px;
+      width: 520px;
+      max-width: calc(100% - 32px);
+      height: 430px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      box-shadow: var(--shadow-pop);
+      z-index: 44;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .wb-main-modal.open { display: flex; animation: popIn 0.2s var(--ease); }
+
+    /* Real Bottom Automation Bar (34px sleek chrome) */
+    .wb-bar {
+      height: 34px;
+      padding: 0 12px;
+      background: var(--chrome);
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      user-select: none;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 42;
+    }
+
+    .wb-logo-btn {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg);
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .wb-logo-btn:hover, .wb-logo-btn.active { background: var(--surface2); }
+    .wb-logo-mood {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--fg3);
+      border: 1.2px solid var(--chrome);
+    }
+    .wb-logo-mood.thinking { background: var(--work); animation: pulseMood 0.9s ease-in-out infinite alternate; }
+    @keyframes pulseMood { from { opacity: 0.35; } to { opacity: 1; } }
+
+    .wb-bar-sep {
+      width: 1px;
+      height: 14px;
+      background: var(--line-strong);
+      margin: 0 7px;
+      flex-shrink: 0;
+    }
+    .wb-grp-sep {
+      width: 1px;
+      height: 11px;
+      background: var(--line-strong);
+      margin: 0 5px;
+      flex-shrink: 0;
+    }
+
+    .wb-bar-dots {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .wb-dot-trigger {
+      height: 28px;
+      width: 22px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.14s;
+    }
+    .wb-dot-trigger:hover, .wb-dot-trigger.active { background: var(--surface); }
+
+    .wb-bar-spacer { flex: 1; }
+
+    .wb-list-btn {
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      color: var(--fg3);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .wb-list-btn:hover { background: var(--surface); color: var(--fg); }
+
+    /* ==========================================================================
+       Section 2: Animated Story-Flow Cinema (NOT a code flowchart!)
+       ========================================================================== */
+    .cinema-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .story-tabs {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+    .story-tab {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--fg2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s var(--ease);
+    }
+    .story-tab:hover { color: var(--fg); }
+    .story-tab.active {
+      background: var(--sheet);
+      color: var(--fg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cinema-card {
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 22px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cinema-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 7.6;
+      min-height: 360px;
+      background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--surface) 60%, transparent), transparent 72%);
+      overflow: hidden;
+    }
+
+    .cinema-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .flow-track {
+      fill: none;
+      stroke: var(--line-strong);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+    }
+    .flow-track-active {
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .flow-track-active.run {
+      opacity: 1;
+      animation: drawTrack 1.8s var(--ease) forwards;
+    }
+    @keyframes drawTrack {
+      from { stroke-dashoffset: 600; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Animated Stage Nodes */
+    .c-node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      min-width: 112px;
+      text-align: center;
+      transition: border-color 0.35s var(--ease), transform 0.35s var(--ease), box-shadow 0.35s var(--ease), opacity 0.35s;
+    }
+    .c-node-title { font-size: 13px; font-weight: 620; color: var(--fg); display: inline-flex; align-items: center; gap: 6px; }
+    .c-node-sub { font-size: 11px; color: var(--fg3); }
+
+    .c-node.lit {
+      border-color: var(--fg);
+      box-shadow: var(--shadow-md);
+      transform: translate(-50%, -50%) scale(1.04);
+    }
+    .c-node.lit-you { border-color: var(--you); box-shadow: 0 0 0 4px var(--you-bg), var(--shadow-md); }
+    .c-node.lit-work { border-color: var(--work); box-shadow: 0 0 0 4px var(--work-bg), var(--shadow-md); }
+    .c-node.lit-wait { border-color: var(--wait); box-shadow: 0 0 0 4px var(--wait-bg), var(--shadow-md); }
+    .c-node.dimmed { opacity: 0.42; }
+
+    /* Live Moving Signal Packet */
+    .signal-orb {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: 0 0 0 5px rgba(128, 128, 128, 0.16);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .signal-orb-tag {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--primary);
+      color: var(--on-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Mini Live Output Strip inside Cinema (Bottom Bar & iPhone reaction) */
+    .cinema-output-bar {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--chrome);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--fg2);
+      white-space: nowrap;
+    }
+
+    .cinema-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--line);
+      background: var(--chrome);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .cinema-story-line {
+      font-size: 13.5px;
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cinema-step-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--fg2);
+    }
+
+    .cinema-progress {
+      width: 120px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+    .cinema-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--fg);
+      transition: width 0.1s linear;
+    }
+
+    /* ==========================================================================
+       Section 3: Real Interactive iPhone Companion Replica
+       ========================================================================== */
+    .ios-grid {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .spec-stack {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid var(--line);
+    }
+    .spec-row {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 16px;
+      align-items: baseline;
+    }
+    .spec-k {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .spec-v {
+      font-size: 14px;
+      color: var(--fg2);
+    }
+    .spec-v b { color: var(--fg); font-weight: 600; }
+
+    /* Authentic iPhone 16 Pro Shell */
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iphone {
+      width: 364px;
+      max-width: 100%;
+      height: 720px;
+      border-radius: 50px;
+      padding: 11px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow-window), 0 0 0 6px color-mix(in srgb, var(--fg) 6%, var(--bg-subtle));
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .iphone-screen {
+      flex: 1;
+      border-radius: 40px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ios-sbar {
+      height: 44px;
+      padding: 12px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .ios-island {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      transform: translateX(-50%);
+      width: 96px;
+      height: 26px;
+      border-radius: 999px;
+      background: #0a0a0a;
+    }
+
+    /* Real WBChrome Toolbar (Gear left, Capsule Switch center) */
+    .ios-nav {
+      height: 46px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .ios-gear-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg2);
+    }
+    .ios-gear-btn:hover { background: var(--surface); color: var(--fg); }
+
+    .ios-switch {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: var(--surface);
+      gap: 2px;
+    }
+    .ios-switch button {
+      height: 28px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      color: var(--fg2);
+      transition: all 0.18s var(--ease);
+    }
+    .ios-switch button.active {
+      background: var(--sheet);
+      color: var(--fg);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Real Gear Corner Menu */
+    .ios-gear-menu {
+      position: absolute;
+      left: 14px;
+      top: 86px;
+      width: 144px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      box-shadow: var(--shadow-pop);
+      padding: 5px;
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+    }
+    .ios-gear-menu.open { display: flex; animation: popIn 0.15s var(--ease); }
+    .ios-gear-item {
+      padding: 8px 10px;
+      border-radius: 9px;
+      font-size: 13px;
+      color: var(--fg);
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+    }
+    .ios-gear-item:hover { background: var(--surface); }
+
+    /* Real WorkbenchHomeView Hero Title (30pt bold + monospaced count) */
+    .ios-hero-row {
+      padding: 2px 18px 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+    .ios-hero-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+    .ios-hero-count { font-size: 28px; font-weight: 500; color: var(--fg3); font-variant-numeric: tabular-nums; }
+
+    /* Real Left Piano-Key Rail (82px) + Hairline List */
+    .ios-body {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ios-rail {
+      width: 80px;
+      flex-shrink: 0;
+      padding: 0 6px 0 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .rail-key {
+      width: 100%;
+      height: 54px;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      transition: background 0.16s var(--ease);
+    }
+    .rail-key.active { background: var(--surface); }
+    .rail-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--fg);
+    }
+    .rail-top.zero { color: var(--fg3); }
+    .rail-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .rail-lbl { font-size: 11.5px; color: var(--fg2); }
+    .rail-key.active .rail-lbl { color: var(--fg); font-weight: 500; }
+    .rail-div { height: 1px; background: var(--line); margin: 5px 8px; }
+
+    .ios-list-col {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 0 14px 86px 4px;
+    }
+
+    .ios-sec-head {
+      padding: 8px 0 4px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--fg2);
+      display: flex;
+      gap: 5px;
+    }
+    .ios-sec-head span { color: var(--fg3); font-weight: 400; }
+
+    .ios-row {
+      width: 100%;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      text-align: left;
+    }
+    .ios-row:hover { opacity: 0.78; }
+    .ios-row-mid { flex: 1; min-width: 0; }
+    .ios-row-title { font-size: 15px; font-weight: 500; color: var(--fg); line-height: 1.35; }
+    .ios-row-sub {
+      font-size: 13px;
+      color: var(--fg2);
+      line-height: 1.4;
+      margin-top: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ios-row-time { font-size: 11.5px; color: var(--fg3); padding-top: 2px; flex-shrink: 0; }
+
+    /* History Segmented Picker */
+    .ios-hist-seg {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 2px;
+      border-radius: 8px;
+      background: var(--surface);
+      margin-bottom: 8px;
+    }
+    .ios-hist-seg button {
+      height: 26px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--fg2);
+    }
+    .ios-hist-seg button.active { background: var(--sheet); color: var(--fg); font-weight: 600; }
+
+    /* Real Bottom-Left Floating Manager Capsule (● 经理 空闲) */
+    .ios-mgr-pill {
+      position: absolute;
+      left: 14px;
+      bottom: 24px;
+      height: 46px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      z-index: 18;
+      transition: transform 0.15s;
+    }
+    .ios-mgr-pill:active { transform: scale(0.96); }
+    .ios-mgr-pill b { font-size: 15px; font-weight: 600; }
+    .ios-mgr-pill span { font-size: 13px; color: var(--fg3); }
+
+    /* Real Slide-Up Bottom Sheet (CaseSheet & ManagerView, 28px corner radius) */
+    .ios-sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.28);
+      z-index: 25;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+    }
+    .ios-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .ios-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 82%;
+      background: var(--sheet);
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.18);
+      z-index: 30;
+      transform: translateY(102%);
+      transition: transform 0.32s var(--ease);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ios-sheet.open { transform: translateY(0); }
+
+    .ios-grab {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--line-strong);
+      margin: 8px auto 4px;
+      flex-shrink: 0;
+    }
+
+    .ios-sheet-head {
+      padding: 6px 16px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .ios-sheet-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13.5px;
+      font-weight: 600;
+      pointer-events: none;
+    }
+    .ios-pill-btn {
+      height: 28px;
+      padding: 0 11px;
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .ios-pill-btn.danger { color: var(--bad); }
+    .ios-pill-btn.armed { background: var(--bad); color: #fff; }
+    .ios-pill-btn.primary { background: var(--primary); color: var(--on-primary); height: 40px; flex: 1; font-size: 14px; }
+    .ios-pill-btn.big { height: 40px; padding: 0 16px; font-size: 14px; }
+    .ios-x {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--fg2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .ios-sheet-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 18px 16px;
+    }
+
+    .ios-sheet-foot {
+      padding: 8px 14px 20px;
+      border-top: 1px solid var(--line);
+      background: var(--sheet);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .ios-composer-inp {
+      flex: 1;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 19px;
+      background: var(--surface);
+      color: var(--fg);
+      border: none;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+    .ios-send-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--on-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Real Agent Tab View (ChatGPT 16/26 Editorial Typography) */
+    .ios-agent-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ios-agent-view.open { display: flex; }
+    .ios-home-view.hidden { display: none; }
+
+    .ios-chat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .cg-answer { font-size: 15px; line-height: 1.65; color: var(--fg); }
+    .cg-answer h4 { font-size: 16.5px; font-weight: 600; margin-bottom: 6px; }
+    .cg-answer p + p { margin-top: 12px; }
+    .cg-user {
+      align-self: flex-end;
+      max-width: 76%;
+      padding: 9px 14px;
+      border-radius: 20px;
+      background: var(--surface);
+      font-size: 14.5px;
+      line-height: 1.5;
+    }
+    .cg-code {
+      margin-top: 10px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+    .cg-code-h {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--fg2);
+    }
+    .cg-code pre { padding: 10px 14px; color: var(--fg2); line-height: 1.65; overflow-x: auto; }
+
+    .ios-toast {
+      position: absolute;
+      left: 50%;
+      bottom: 78px;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 45;
+      transition: opacity 0.2s, transform 0.2s var(--ease);
+    }
+    .ios-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .ios-home-bar {
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ios-home-bar span { width: 112px; height: 4px; border-radius: 999px; background: var(--line-strong); }
+
+    /* ==========================================================================
+       Section 4: Compact Visual Grammar Strip (Zero Fluff)
+       ========================================================================== */
+    .grammar-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .g-tile {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s, transform 0.2s var(--ease);
+    }
+    .g-tile:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+    .g-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .g-tile h3 { font-size: 14px; font-weight: 600; }
+    .g-tile p { font-size: 12.2px; color: var(--fg2); line-height: 1.5; }
+
+    /* ==========================================================================
+       Section 5: Visual Craft Micro-Widgets (80% Artifact, 20% Caption)
+       ========================================================================== */
+    .craft-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+    }
+
+    .craft-card {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .artifact-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.8;
+      color: var(--fg2);
+      flex: 1;
+    }
+    .a-row { display: flex; align-items: baseline; gap: 8px; }
+    .a-ok { color: var(--ok); font-weight: 600; }
+    .a-inf { color: var(--fg3); }
+    .a-hi { color: var(--fg); font-weight: 500; }
+
+    .craft-card h3 { font-size: 16px; font-weight: 600; }
+    .craft-card p { font-size: 13px; color: var(--fg2); margin-top: 4px; }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    .closing {
+      text-align: center;
+      padding: 96px 24px 80px;
+    }
+    .closing-dots {
+      display: inline-flex;
+      gap: 9px;
+      margin-bottom: 22px;
+    }
+    .closing-dots span { width: 9px; height: 9px; border-radius: 50%; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 26px 0;
+      font-size: 12.5px;
+      color: var(--fg3);
+    }
+    .foot-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (max-width: 980px) {
+      section { padding: 76px 0; }
+      .ios-grid { grid-template-columns: 1fr; gap: 40px; }
+      .grammar-strip { grid-template-columns: repeat(3, 1fr); }
+      .craft-grid { grid-template-columns: 1fr; }
+      .cinema-stage { aspect-ratio: auto; min-height: 410px; }
+    }
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
+      .desk-side { display: none; }
+      .desk-stage { padding: 18px; }
+      .grammar-strip { grid-template-columns: repeat(2, 1fr); }
+      .c-node { min-width: 86px; padding: 7px 9px; }
+      .c-node-title { font-size: 11.5px; }
+      .c-node-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="#top" class="brand">
+        <span class="brand-dots" aria-hidden="true">
+          <i class="c-you"></i><i class="c-work"></i><i class="c-wait"></i><i class="c-done"></i>
+        </span>
+        <span>Workbench</span>
+      </a>
+
+      <nav class="nav-links" aria-label="导航">
+        <a href="#desktop">桌面端</a>
+        <a href="#flow">动态流程</a>
+        <a href="#iphone">iPhone</a>
+        <a href="#grammar">状态语法</a>
+        <a href="#craft">透明度</a>
+      </nav>
+
+      <button class="theme-btn" id="themeBtn" type="button" aria-label="切换浅色或深色">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ======================================================================
+         Section 1: Hero + 1:1 Authentic Desktop Workbench
+         ====================================================================== -->
+    <section class="hero" id="desktop">
+      <div class="container">
+        <div class="hero-head reveal is-visible">
+          <div class="hero-pill">
+            <span class="mini-dots" aria-hidden="true">
+              <span class="c-you"></span><span class="c-work"></span><span class="c-wait"></span><span class="c-done"></span>
+            </span>
+            <span>macOS &amp; iPhone · 个人 Agent 任务工作台</span>
+          </div>
+
+          <h1 class="h1">
+            让系统在余光里安静运转，<br />
+            把注意力留给深度思考。
+          </h1>
+
+          <p class="sub">
+            主体只留你正在深入思考的对话，所有自动化的事收进底栏一行彩点。
+          </p>
+        </div>
+
+        <div class="desk-wrap reveal is-visible">
+          <div class="demo-caption">
+            <span>悬停底栏彩点预览，移入卡片操作条自动滑出</span>
+            <span>·</span>
+            <span>右键灰点标已读</span>
+            <span>·</span>
+            <span>点右上角 <b>MR 3</b> 或按 <kbd>⌘K</kbd></span>
+          </div>
+
+          <div class="desk-win" id="deskWin">
+            <!-- Top Tab Bar + Real wb-mr-button -->
+            <div class="desk-top">
+              <div class="desk-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="desk-tabs" id="deskTabs">
+                <button class="desk-tab active" data-tab="main1" type="button">
+                  <span class="wb-dot-core c-work" style="width:6px;height:6px;"></span>
+                  <span>核心队列重构方案</span>
+                </button>
+                <button class="desk-tab" data-tab="main2" type="button">
+                  <span>协议层演进探讨</span>
+                </button>
+              </div>
+              <button class="wb-mr-btn" id="mrBtn" type="button" title="展开右侧 MR 面板">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="4" cy="4" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="12" r="2"/>
+                  <path d="M4 6v4M12 10V6a2 2 0 0 0-2-2H8"/>
+                </svg>
+                <span>MR</span>
+                <span class="wb-mr-badge">3</span>
+              </button>
+            </div>
+
+            <!-- Main Window Body -->
+            <div class="desk-main">
+              <!-- Left Sidebar (Herdr Spaces/Agents — Manual Focus Only) -->
+              <aside class="desk-side">
+                <div>
+                  <div class="side-sec">我的聚焦</div>
+                  <button class="side-row active" data-tab="main1" type="button">
+                    <span>核心队列重构方案</span><span class="s-meta">◎</span>
+                  </button>
+                  <button class="side-row" data-tab="main2" type="button">
+                    <span>协议层演进探讨</span><span class="s-meta">idle</span>
+                  </button>
+                </div>
+                <div>
+                  <div class="side-sec">Spaces</div>
+                  <div class="side-row"><span>runtime-core</span><span class="s-meta">2</span></div>
+                  <div class="side-row"><span>workbench</span><span class="s-meta">main</span></div>
+                </div>
+              </aside>
+
+              <!-- Quiet Deep-Focus Canvas -->
+              <div class="desk-stage" id="deskStage">
+                <div class="term-user">
+                  如果把状态写入和外发审计合并成单调版本号日志，手机回前台只补增量，首屏能压到 100ms 以内吗？
+                </div>
+                <div class="term-agent">
+                  <p>可以。实测走本地 Unix Socket 常驻通道，携带本地 <span class="mono">rev</span> 拉增量大约 <strong>90ms</strong>。</p>
+                  <div class="code-box">
+                    <div class="code-box-top"><span>daemon/store/events.sql</span><span>SQLite WAL · FTS5</span></div>
+                    <pre>SELECT rev, kind, actor, text FROM case_events
+WHERE rev &gt; ? ORDER BY rev ASC;</pre>
+                  </div>
+                </div>
+
+                <!-- Floating Terminal Peek (Real「查看」— does not enter main workspace) -->
+                <div class="term-peek" id="termPeek">
+                  <div class="term-peek-bar">
+                    <span id="termPeekTitle">查看小弟终端（不接管）</span>
+                    <button type="button" id="termPeekClose" style="color:#a1a1aa;font-size:12px;">ESC 收起 ×</button>
+                  </div>
+                  <div class="term-peek-body" id="termPeekBody"></div>
+                </div>
+              </div>
+
+              <!-- Real wb-mrs Right Side Panel -->
+              <aside class="mr-drawer" id="mrDrawer" aria-label="MR 面板">
+                <div class="mr-drawer-inner">
+                  <div>
+                    <div class="mr-group-title"><span>待我评审</span><span>1</span></div>
+                    <div class="mr-item">
+                      <div class="mr-item-title">API 限流阈值变更评审</div>
+                      <div class="mr-item-meta">core-api!418 · 14 file</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="mr-group-title"><span>我的 · 要我处理</span><span>1</span></div>
+                    <div class="mr-item">
+                      <div class="mr-item-title">重试队列退避上限修复</div>
+                      <div class="mr-item-meta">billing-svc!204 · 1 评论</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="mr-group-title"><span>我的 · 可合并</span><span>1</span></div>
+                    <div class="mr-item">
+                      <div class="mr-item-title">发送口放行接管终端自由评论</div>
+                      <div class="mr-item-meta">workbench!89 · Pipeline ✓</div>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+
+              <!-- Real wb-claude-bar Floating Case / Manager Card -->
+              <div class="wb-pop" id="wbPop" role="dialog" aria-label="事项卡片">
+                <div id="wbPopInner"></div>
+                <div class="pop-bar" id="wbPopBar"></div>
+                <div class="pop-hint" id="wbPopHint" style="display:none;"></div>
+              </div>
+
+              <!-- Real Full Manager Conversation Modal -->
+              <div class="wb-main-modal" id="wbMainModal">
+                <div class="list-head">
+                  <span style="display:inline-flex;align-items:center;gap:8px;">
+                    <span id="mgrModalIcon"></span>
+                    <span>经理 · 主对话</span>
+                    <span style="font-weight:400;color:var(--fg3);" id="mgrModalState">空闲</span>
+                  </span>
+                  <button type="button" id="wbMainClose" style="color:var(--fg3);font-size:16px;">×</button>
+                </div>
+                <div class="list-scroll" style="flex:1;padding:12px 14px;gap:10px;" id="wbMainThread"></div>
+                <form id="wbMainForm" style="padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;">
+                  <input class="pop-inp" id="wbMainInp" placeholder="和经理说…" autocomplete="off" />
+                  <button class="wb-btn primary" type="submit">发送</button>
+                </form>
+              </div>
+
+              <!-- Real ⌘K 清单 Overlay -->
+              <div class="wb-list-pop" id="wbListPop">
+                <div class="list-head">
+                  <span>工作台清单</span>
+                  <button type="button" id="wbListClose" style="color:var(--fg3);font-size:15px;">ESC ×</button>
+                </div>
+                <div class="list-scroll" id="wbListBody"></div>
+              </div>
+            </div>
+
+            <!-- Real 34px Bottom Automation Bar (wb-claude-bar) -->
+            <div class="wb-bar" id="wbBar">
+              <button class="wb-logo-btn" id="wbLogoBtn" type="button" title="经理 · 悬停预览 / 点击展开主对话">
+                <!-- Minimalist Horned Watchman Silhouette SVG -->
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 7c0-2.5 1.8-4 3.5-3.2M19 7c0-2.5-1.8-4-3.5-3.2"/>
+                  <path d="M7.5 10.5a4.5 4.5 0 0 1 9 0v1.5a4.5 4.5 0 0 1-9 0z"/>
+                  <path d="M6.5 19.5c1-3 3-4.5 5.5-4.5s4.5 1.5 5.5 4.5"/>
+                  <path d="M8.5 17.5h7"/>
+                </svg>
+                <span class="wb-logo-mood" id="wbLogoMood"></span>
+              </button>
+              <span class="wb-bar-sep" aria-hidden="true"></span>
+              <div class="wb-bar-dots" id="wbBarDots"></div>
+              <div class="wb-bar-spacer"></div>
+              <button class="wb-list-btn" id="wbListBtn" type="button">
+                <span>清单</span>
+                <span class="mono" style="font-size:10.5px;">⌘K</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Section 2: Cinematic Animated Flow (Playable Visual Storytelling)
+         ====================================================================== -->
+    <section id="flow">
+      <div class="container">
+        <div class="cinema-head reveal">
+          <div>
+            <div class="eyebrow">How It Flows</div>
+            <h2 class="h2">一条消息，如何安静走完一生。</h2>
+            <p class="sub">不是死板框图，点开四个真实场景看系统怎么替你挡噪音、闭环、和接力。</p>
+          </div>
+
+          <div class="story-tabs" id="storyTabs" role="tablist">
+            <button class="story-tab active" data-scene="0" type="button">
+              <span class="wb-dot-core c-done" style="width:7px;height:7px;"></span>01 挡掉噪音
+            </button>
+            <button class="story-tab" data-scene="1" type="button">
+              <span class="wb-dot-core c-work" style="width:7px;height:7px;"></span>02 自动闭环
+            </button>
+            <button class="story-tab" data-scene="2" type="button">
+              <span class="wb-dot-core c-you" style="width:7px;height:7px;"></span>03 卡点等你
+            </button>
+            <button class="story-tab" data-scene="3" type="button">
+              <span class="wb-dot-core c-wait" style="width:7px;height:7px;"></span>04 离席推手机
+            </button>
+          </div>
+        </div>
+
+        <div class="cinema-card reveal">
+          <div class="cinema-stage" id="cinemaStage">
+            <!-- Smooth Curved SVG Tracks -->
+            <svg class="cinema-svg" viewBox="0 0 1000 475" preserveAspectRatio="none" aria-hidden="true">
+              <!-- Signal -> Gate -->
+              <path id="p-sig-gate" class="flow-track" d="M 110 210 C 175 210, 195 210, 265 210" />
+              <!-- Gate -> Ignored (Noise Drop) -->
+              <path id="p-gate-ign" class="flow-track" d="M 265 210 C 310 210, 315 348, 390 348" />
+              <!-- Gate -> Manager -->
+              <path id="p-gate-mgr" class="flow-track" d="M 265 210 C 335 210, 360 155, 445 155" />
+              <!-- Manager -> Worker -->
+              <path id="p-mgr-wrk" class="flow-track" d="M 445 155 C 525 155, 550 155, 635 155" />
+              <!-- Worker -> wb send -->
+              <path id="p-wrk-snd" class="flow-track" d="M 635 155 C 700 155, 725 258, 795 258" />
+              <!-- Worker -> Bottom Bar Dot -->
+              <path id="p-wrk-bar" class="flow-track" d="M 635 155 C 635 270, 560 355, 500 412" />
+              <!-- Desktop -> iPhone SSH Arc -->
+              <path id="p-ssh-ios" class="flow-track" d="M 500 412 C 690 412, 830 375, 885 155" stroke-dasharray="5 5" />
+
+              <!-- Active Highlight Overlay Paths -->
+              <path id="pa-1" class="flow-track-active" d="" />
+              <path id="pa-2" class="flow-track-active" d="" />
+              <path id="pa-3" class="flow-track-active" d="" />
+            </svg>
+
+            <!-- Moving Signal Packet -->
+            <div class="signal-orb" id="signalOrb">
+              <div class="signal-orb-tag" id="signalTag">群消息</div>
+            </div>
+
+            <!-- Stage Nodes (positioned in % matching SVG viewBox 1000x475) -->
+            <div class="c-node" id="n-sig" style="left:11%;top:44%;">
+              <div class="c-node-title">外部信号</div>
+              <div class="c-node-sub">IM · MR · 告警</div>
+            </div>
+
+            <div class="c-node" id="n-gate" style="left:26.5%;top:44%;">
+              <div class="c-node-title">门童过滤</div>
+              <div class="c-node-sub">规则 + 轻量模型</div>
+            </div>
+
+            <div class="c-node" id="n-ign" style="left:39%;top:73%;">
+              <div class="c-node-title">已忽略 · 可查</div>
+              <div class="c-node-sub">~80% 静默归档</div>
+            </div>
+
+            <div class="c-node" id="n-mgr" style="left:44.5%;top:32.6%;">
+              <div class="c-node-title">经理 · 主 Agent</div>
+              <div class="c-node-sub">归并 · 派工 · 代决</div>
+            </div>
+
+            <div class="c-node" id="n-wrk" style="left:63.5%;top:32.6%;">
+              <div class="c-node-title">小弟会话</div>
+              <div class="c-node-sub">Claude / Codex</div>
+            </div>
+
+            <div class="c-node" id="n-snd" style="left:79.5%;top:54.3%;">
+              <div class="c-node-title">受控发送口</div>
+              <div class="c-node-sub">wb send · 留痕</div>
+            </div>
+
+            <div class="c-node" id="n-ios" style="left:88.5%;top:32.6%;">
+              <div class="c-node-title">iPhone 锁屏</div>
+              <div class="c-node-sub">SSH · 离席 10m 推</div>
+            </div>
+
+            <!-- Live Reacting Mini Bottom Bar inside Cinema -->
+            <div class="cinema-output-bar" id="cinemaBar">
+              <span style="font-size:11px;color:var(--fg3);">底栏</span>
+              <span class="wb-dot-box" id="cinemaDot">
+                <span class="wb-dot-ring"><span class="wb-dot-core c-done"></span></span>
+              </span>
+              <span id="cinemaBarText" style="font-size:12px;color:var(--fg);">安静，无新打扰</span>
+            </div>
+          </div>
+
+          <div class="cinema-footer">
+            <div class="cinema-story-line">
+              <span class="cinema-step-pill" id="cinemaStepPill">SCENE 01</span>
+              <span id="cinemaCaption">无关闲聊在门童处直接落入「可查」，主窗口与底栏纹丝不动。</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="cinema-progress"><div class="cinema-progress-fill" id="cinemaProg"></div></div>
+              <button class="wb-btn" id="cinemaReplay" type="button" style="height:26px;font-size:11.5px;">重播</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Section 3: 1:1 Authentic Native iPhone Companion App
+         ====================================================================== -->
+    <section id="iphone">
+      <div class="container">
+        <div class="ios-grid">
+          <div class="reveal">
+            <div class="eyebrow">Workbench for iPhone</div>
+            <h2 class="h2">离开电脑，<br />系统不停转。</h2>
+            <p class="sub">
+              基于原生 Swift 6 打造，与桌面端共享同一套守护进程和状态语法。
+            </p>
+
+            <div class="spec-stack">
+              <div class="spec-row">
+                <div class="spec-k">钢琴键索引</div>
+                <div class="spec-v">放弃底部 Tab 栏。左侧固定状态条<b>按住滑动即切分类</b>，单手极速扫黄点。</div>
+              </div>
+              <div class="spec-row">
+                <div class="spec-k">原地接管</div>
+                <div class="spec-v">先旁观小弟进展；需要介入时<b>发消息即确认接管</b>，也可一键打开 <span class="mono">libghostty</span> 终端。</div>
+              </div>
+              <div class="spec-row">
+                <div class="spec-k">SSH · 90ms</div>
+                <div class="spec-v">直连本机 Unix Socket，无需公网暴露服务；回前台增量同步，<b>发话 &lt; 0.4s</b>。</div>
+              </div>
+              <div class="spec-row">
+                <div class="spec-k">离席感知</div>
+                <div class="spec-v">人在桌前手机不响；<b>macOS 键鼠静默 10 分钟</b>才汇总推锁屏，桌面看过自动消角标。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1:1 Interactive iPhone App Replica (Synced live with Desktop!) -->
+          <div class="phone-wrap reveal">
+            <div class="demo-caption" style="margin-bottom:4px;">
+              <span>按住滑过左侧状态条 · 点卡片拉起底部抽屉 · 点左下角「经理」</span>
+            </div>
+
+            <div class="iphone">
+              <div class="iphone-screen" id="iosScreen">
+                <!-- Status Bar + Dynamic Island -->
+                <div class="ios-sbar">
+                  <span>9:41</span>
+                  <div class="ios-island" aria-hidden="true"></div>
+                  <span class="mono" style="font-size:11px;">5G</span>
+                </div>
+
+                <!-- Real WBChrome Top Bar -->
+                <div class="ios-nav">
+                  <button class="ios-gear-btn" id="iosGearBtn" type="button" aria-label="设置菜单">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                  </button>
+
+                  <div class="ios-switch" role="tablist">
+                    <button type="button" class="active" id="iosSwHome">工作台</button>
+                    <button type="button" id="iosSwAgent">Agent</button>
+                  </div>
+
+                  <span style="width:34px;"></span>
+                </div>
+
+                <!-- Real Corner Menu -->
+                <div class="ios-gear-menu" id="iosGearMenu">
+                  <button class="ios-gear-item" type="button"><span>终端</span><span class="mono" style="color:var(--fg3);">›_</span></button>
+                  <button class="ios-gear-item" type="button"><span>用量</span><span style="color:var(--fg3);">ill</span></button>
+                  <button class="ios-gear-item" type="button"><span>主机</span><span style="color:var(--ok);">●</span></button>
+                  <button class="ios-gear-item" type="button"><span>设置</span><span style="color:var(--fg3);">⚙</span></button>
+                </div>
+
+                <!-- View 1: WorkbenchHomeView -->
+                <div class="ios-home-view" id="iosHomeView" style="flex:1;display:flex;flex-direction:column;min-height:0;position:relative;">
+                  <div class="ios-hero-row">
+                    <span class="ios-hero-title" id="iosHeroTitle">全部</span>
+                    <span class="ios-hero-count" id="iosHeroCount">5</span>
+                  </div>
+
+                  <div class="ios-body">
+                    <!-- Real Left Piano-Key Rail -->
+                    <div class="ios-rail" id="iosRail" role="tablist" aria-label="状态索引"></div>
+                    <!-- Real Hairline Case / History List -->
+                    <div class="ios-list-col" id="iosListCol"></div>
+                  </div>
+
+                  <!-- Real Floating Bottom-Left Manager Capsule -->
+                  <button class="ios-mgr-pill" id="iosMgrPill" type="button">
+                    <span class="wb-dot-core" id="iosMgrDot" style="width:8px;height:8px;background:var(--fg3);"></span>
+                    <b>经理</b>
+                    <span id="iosMgrWord">空闲</span>
+                  </button>
+                </div>
+
+                <!-- View 2: Agent Chat View (ChatGPT 16/26 Typography) -->
+                <div class="ios-agent-view" id="iosAgentView">
+                  <div style="padding:4px 16px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">
+                      <span class="wb-dot-core c-work" style="width:8px;height:8px;"></span>
+                      <span id="iosAgentTitle">支付回调超时根因排查</span>
+                    </span>
+                    <span style="font-size:12px;color:var(--fg3);">在终端中打开 ↗</span>
+                  </div>
+
+                  <div class="ios-chat-scroll" id="iosAgentChat">
+                    <div class="cg-answer">
+                      <h4>根因定位已完成</h4>
+                      <p>对比三次发布窗口，超时集中在连接池耗尽后的重试队列：<strong>下游超过 2.5s 时，同一回调被重复推入热队列</strong>。</p>
+                      <div class="cg-code">
+                        <div class="cg-code-h"><span>trace · billing-svc</span><span>复制</span></div>
+                        <pre>14:18:04 retry_depth=4 wait=3120ms
+14:18:05 pool_exhausted 64/64</pre>
+                      </div>
+                    </div>
+                    <div class="cg-user">先按方案 B 加上退避上限，跑完压测给我看 diff。</div>
+                    <div class="cg-answer">
+                      <p>已在独立分支修改退避策略并启动压测，完成后直接回传结果。</p>
+                    </div>
+                  </div>
+
+                  <form class="ios-sheet-foot" id="iosAgentForm">
+                    <input class="ios-composer-inp" id="iosAgentInp" placeholder="发送会接管这件事…" autocomplete="off" />
+                    <button class="ios-send-circle" type="submit" aria-label="发送">↑</button>
+                  </form>
+                </div>
+
+                <!-- Real Slide-Up Bottom Sheet Backdrop + Container -->
+                <div class="ios-sheet-backdrop" id="iosBackdrop"></div>
+                <div class="ios-sheet" id="iosSheet" role="dialog" aria-modal="true">
+                  <div class="ios-grab"></div>
+                  <div class="ios-sheet-head" id="iosSheetHead"></div>
+                  <div class="ios-sheet-scroll" id="iosSheetScroll"></div>
+                  <div class="ios-sheet-foot" id="iosSheetFoot"></div>
+                </div>
+
+                <div class="ios-toast" id="iosToast"></div>
+                <div class="ios-home-bar" aria-hidden="true"><span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Section 4: Compact Visual Dot Grammar (6 Tiles, 1 Line Each)
+         ====================================================================== -->
+    <section id="grammar">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">Visual Grammar</div>
+          <h2 class="h2">颜色只回答一件事：球在谁手里。</h2>
+        </div>
+
+        <div class="grammar-strip reveal">
+          <div class="g-tile">
+            <div class="g-icon"><span class="wb-dot-core c-you"></span></div>
+            <h3>黄 · 等你</h3>
+            <p>需要拍板、验收或选择题</p>
+          </div>
+          <div class="g-tile">
+            <div class="g-icon"><span class="wb-dot-core c-work"></span></div>
+            <h3>蓝 · 在做</h3>
+            <p>小弟在工程目录静默干活</p>
+          </div>
+          <div class="g-tile">
+            <div class="g-icon"><span class="wb-dot-core c-wait"></span></div>
+            <h3>紫 · 等对方</h3>
+            <p>记等待时长，绝不擅自催</p>
+          </div>
+          <div class="g-tile">
+            <div class="g-icon"><span class="wb-dot-core c-done"></span></div>
+            <h3>灰 · 未读</h3>
+            <p>自动闭环，已读或 48h 消</p>
+          </div>
+          <div class="g-tile">
+            <div class="g-icon">
+              <span class="wb-dot-ring ring-solid"><span class="wb-dot-core c-work"></span></span>
+            </div>
+            <h3>◎ · 已接管</h3>
+            <p>交由你亲手驱动，锁外发</p>
+          </div>
+          <div class="g-tile">
+            <div class="g-icon">
+              <span class="wb-dot-box"><span class="wb-dot-core c-you"></span><span class="wb-dot-bub"></span></span>
+            </div>
+            <h3>红点 · 新待办</h3>
+            <p>悬停 0.6 秒即消，不弹横幅</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Section 5: Transparent Craft (Visual Artifacts Instead of Paragraphs)
+         ====================================================================== -->
+    <section id="craft">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">No Black Box</div>
+          <h2 class="h2">每一笔动作可验，每一行规则可改。</h2>
+        </div>
+
+        <div class="craft-grid reveal">
+          <div class="craft-card">
+            <div class="artifact-box">
+              <div class="a-row"><span class="a-ok">✓</span><span class="a-hi">已发生 · MR #418 已发评审评论</span></div>
+              <div class="a-row"><span class="a-ok">✓</span><span class="a-hi">已发生 · 已私聊通知发起人</span></div>
+              <div class="a-row"><span class="a-inf">≈</span><span class="a-inf">推断 · 峰值场景疑似提前限流</span></div>
+            </div>
+            <div>
+              <h3>事实与推断分离</h3>
+              <p>外发与审批作为事实落盘 SQLite，绝不和模型猜测混在一起。</p>
+            </div>
+          </div>
+
+          <div class="craft-card">
+            <div class="artifact-box">
+              <div class="a-row"><span class="a-hi">01</span><span>MEMORY.md · 长期偏好常驻</span></div>
+              <div class="a-row"><span class="a-hi">02</span><span>SQLite FTS5 · 随时全文翻旧账</span></div>
+              <div class="a-row"><span class="a-inf">03</span><span>23:30 夜间整理 · 每三日汇总建议</span></div>
+            </div>
+            <div>
+              <h3>三层记忆与夜间复盘</h3>
+              <p>越用越懂你的工作习惯，沉淀为可追溯的日记与建议。</p>
+            </div>
+          </div>
+
+          <div class="craft-card">
+            <div class="artifact-box">
+              <div class="a-row"><span class="a-hi">consensus/</span><span>逐层定稿的设计共识</span></div>
+              <div class="a-row"><span class="a-hi">skills/</span><span>随时可改的业务边界</span></div>
+              <div class="a-row"><span class="a-inf">git log</span><span>机制只由人演进，可回滚</span></div>
+            </div>
+            <div>
+              <h3>规则全部在 Git 里</h3>
+              <p>没有关在云端黑盒里的提示词，想改规则改完即生效。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Quiet Closing -->
+    <div class="closing reveal">
+      <div class="closing-dots" aria-hidden="true">
+        <span class="c-you"></span><span class="c-work"></span><span class="c-wait"></span><span class="c-done"></span>
+      </div>
+      <h2 class="h2">把注意力线程，压回三个以内。</h2>
+      <p class="sub">Workbench · Built on herdr-core for macOS &amp; Swift 6 iOS.</p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container foot-inner">
+      <span><b style="color:var(--fg);">Workbench</b> · Personal Agent Task System</span>
+      <span>桌面端与 iPhone 演示共享同一份实时状态</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       Unified Live State Store + Authentic Desktop / iPhone / Cinema Engines
+       ======================================================================== -->
+  <script>
+    (() => {
+      // 1. Theme Toggle
+      const root = document.documentElement;
+      const saved = localStorage.getItem('wb-theme');
+      if (saved === 'dark' || (!saved && window.matchMedia?.('(prefers-color-scheme: dark)').matches)) {
+        root.setAttribute('data-theme', 'dark');
+      }
+      document.getElementById('themeBtn').addEventListener('click', () => {
+        const dark = root.getAttribute('data-theme') !== 'dark';
+        if (dark) root.setAttribute('data-theme', 'dark');
+        else root.removeAttribute('data-theme');
+        localStorage.setItem('wb-theme', dark ? 'dark' : 'light');
+      });
+
+      // Scroll reveal
+      const io = new IntersectionObserver((es) => {
+        es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // ======================================================================
+      // 2. Shared Real-Fidelity Store (Desktop & iPhone stay 100% in sync!)
+      // ======================================================================
+      const WORD = { you: '等你', work: 'Agent 在做', wait: '等对方', done: '已结束' };
+      const SHORT_WORD = { you: '等你', work: '在做', wait: '等对方', done: '已结束' };
+      const ORDER = ['you', 'work', 'wait', 'done'];
+
+      const store = {
+        managerStatus: 'idle', // idle | thinking
+        ignoredCount: 29,
+        decisions: [
+          { title: '支付回调超时根因排查', text: '放行小弟读取只读监控指标权限', at: '14:12' },
+          { title: '核心队列重构方案', text: '批准新建 feature/queue-wal 分支权限', at: '11:40' }
+        ],
+        ignored: [
+          { who: '系统通知', text: '周会纪要已同步至云文档', reason: '固定格式通知，规则过滤', at: '16:40' },
+          { who: '产品群', text: '下周团建地点投票链接', reason: '无关闲聊，门童过滤', at: '15:18' },
+          { who: '研发单聊', text: '好的收到，我这边验证下', reason: '你正在亲自聊的对话', at: '14:05' }
+        ],
+        managerTalk: [
+          { who: 'events', items: ['门童过滤 14 条系统通知', '已归并支付回调 2 条反馈并派工', '代决：放行只读指标查询确认'] },
+          { who: 'note', text: '夜间整理 2026-11-20 · 更新 MEMORY.md（+2 条偏好），写入日记' },
+          { who: 'me', ref: 'API 限流阈值变更评审（!418）', caseId: 'c1', text: '核心服务 MR 结论先放我这边看一眼。', at: '14:02' },
+          { who: 'manager', text: '明白。小弟审完后我会直接点亮黄点交你终审，不自动批准。', at: '14:02' },
+          { who: 'me', text: '今天整体什么情况？', at: '16:50' },
+          { who: 'manager', text: '今天已过滤 29 条噪音，自动闭环 3 件常规排查。\n\n目前只有 **!418 限流变更评审** 卡在你这里拍板，其余都在安静推进。', at: '16:50' }
+        ],
+        cases: [
+          {
+            id: 'c1', g: 'you', kind: '交付', owner: 'agent', pending: null, seen: false,
+            title: 'API 限流阈值变更评审（!418）',
+            src: '钉钉单聊', project: 'core-api', when: '16:48',
+            progress: '小弟已完成 14 个改动文件审查与单测核验，按策略交你终审。',
+            ask: '确认是否直接批准合并，还是补一条关于峰值突发流量降级的评审评论？',
+            terminal: 't41',
+            termLog: '$ git diff main...HEAD --stat\n 14 files changed, 186 insertions(+), 42 deletions(-)\n$ pytest tests/test_ratelimit.py\n 28 passed in 1.42s\n[结论] 代码单测通过，建议确认突发流量下的 429 阈值。',
+            events: [
+              { kind: 'action', actor: 'agent', text: '小弟完成 14 个文件审查与单元测试验证', at: '16:42' },
+              { kind: 'inferred', actor: 'helper', text: '峰值突发场景下疑似可能提前触发 429 限流', at: '16:45' },
+              { kind: 'action', actor: 'agent', text: '已生成评论草稿，等你确认后经 wb send 发出', at: '16:48' }
+            ]
+          },
+          {
+            id: 'c2', g: 'work', kind: null, owner: 'agent', pending: null, seen: true,
+            title: '支付回调超时根因排查',
+            src: '钉钉单聊', project: 'billing-svc', when: '16:35',
+            progress: '正在 billing-svc 比对近三次发布连接池指标与重试链路日志。',
+            ask: null, terminal: 't52',
+            termLog: '$ grep -E "pool_exhausted|retry_depth" logs/prod.log | tail -n 3\n14:18:04 retry_depth=4 queue_wait=3120ms\n14:18:05 pool_exhausted active=64/64\n[分析中] 正在核对退避策略改动提交…',
+            events: [
+              { kind: 'action', actor: 'manager', text: '归并 2 条反馈并派工至 billing-svc 会话', at: '16:28' },
+              { kind: 'action', actor: 'manager', text: '代决：放行只读监控查询工具确认', at: '16:31' },
+              { kind: 'inferred', actor: 'helper', text: '正在验证重试队列阻塞是否与连接池上限相关', at: '16:35' }
+            ]
+          },
+          {
+            id: 'c3', g: 'work', kind: null, owner: 'me', pending: null, seen: true,
+            title: '核心队列重构方案',
+            src: '主窗口', project: 'runtime-core', when: '15:50',
+            progress: '已由你在主窗口接管，系统停止自动外发，交还后无缝承接。',
+            ask: null, terminal: 't18',
+            termLog: '$ cargo test queue::wal\nrunning 12 tests ... ok\n[已接管] 当前由你在主窗口直接驱动。',
+            events: [
+              { kind: 'action', actor: 'user', text: '已在主窗口接管该终端，自动外发通道已锁定', at: '15:50' }
+            ]
+          },
+          {
+            id: 'c4', g: 'wait', kind: null, owner: 'agent', pending: null, seen: true,
+            waitingOn: '对方',
+            title: '导出任务偶发白屏反馈',
+            src: '群聊 @', project: 'web-editor', when: '等了 3 小时',
+            progress: '已在来源群礼貌回问复现素材编号，静默等待对方补充。',
+            ask: null, terminal: 't63',
+            termLog: '$ wb send dingtalk --case c4 --action group --text "方便发一下复现作品 ID 吗？"\n{"ok":true,"receipt":"msg_9821"}',
+            events: [
+              { kind: 'action', actor: 'agent', text: '经受控发送口在来源群回问复现作品 ID', at: '13:45' }
+            ]
+          },
+          {
+            id: 'c5', g: 'done', kind: null, owner: 'agent', pending: null, seen: false,
+            title: '构建节点磁盘告警自动恢复',
+            src: '线上告警', project: 'build-runner', when: '15:10',
+            progress: '缓存清理完成，磁盘由 91% 降至 42%，已在告警群同步结案。',
+            ask: null, terminal: null,
+            events: [
+              { kind: 'action', actor: 'agent', text: '核验节点磁盘占用由 91% 回落至 42%', at: '15:08' },
+              { kind: 'action', actor: 'agent', text: '已在告警群同步结案摘要并写入 FTS5 索引', at: '15:10' }
+            ]
+          }
+        ],
+        doneHistory: [
+          { id: 'h1', title: '测试环境配置刷新延迟排查', progress: '已定位为监听重连退避配置过期，已同步修复 PR', time: '11:20' },
+          { id: 'h2', title: '前端打包脚本 MR 自动评审', progress: '非核心仓无风险，已自动批准并私聊通知作者', time: '10:05' }
+        ]
+      };
+
+      const ringOf = (c) => c.pending === 'take_over' ? 'dashed' : c.owner === 'me' ? (c.pending === 'hand_back' ? 'dashed' : 'solid') : null;
+      const hasBubble = (c) => c.g === 'you' && !c.seen && c.owner !== 'me';
+      const onBar = (c) => c.g !== 'done' || !c.seen;
+
+      function dotHTML(c, { bub = false, ios = false } = {}) {
+        const r = ringOf(c);
+        const rCls = r ? (ios ? `ios-ring-${r} t-${c.g}` : `ring-${r}`) : '';
+        return `<span class="wb-dot-box">
+          <span class="wb-dot-ring ${rCls}"><span class="wb-dot-core c-${c.g}"></span></span>
+          ${bub ? '<span class="wb-dot-bub"></span>' : ''}
+        </span>`;
+      }
+
+      function nowClock() {
+        const d = new Date();
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      }
+
+      // ======================================================================
+      // 3. Authentic Desktop wb-claude-bar Engine (Peek, Slide Bar, Arm End)
+      // ======================================================================
+      const wbBarDots = document.getElementById('wbBarDots');
+      const wbLogoBtn = document.getElementById('wbLogoBtn');
+      const wbLogoMood = document.getElementById('wbLogoMood');
+      const wbPop = document.getElementById('wbPop');
+      const wbPopInner = document.getElementById('wbPopInner');
+      const wbPopBar = document.getElementById('wbPopBar');
+      const wbPopHint = document.getElementById('wbPopHint');
+      const wbListPop = document.getElementById('wbListPop');
+      const wbListBody = document.getElementById('wbListBody');
+      const wbMainModal = document.getElementById('wbMainModal');
+      const wbMainThread = document.getElementById('wbMainThread');
+      const termPeek = document.getElementById('termPeek');
+      const deskWin = document.getElementById('deskWin');
+
+      let dActive = null;      // caseId | 'mgr' | null
+      let dPinned = false;     // clicked -> pinned
+      let dBarOpen = false;    // action bar slid open
+      let dArmedEnd = null;    // 3s armed confirm end
+      let dHoverTimer = null;  // 600ms hover seen timer
+      let dCloseTimer = null;  // 240ms leave timer
+      let dLastX = 16;
+      let dListOpen = { dec: false, ign: false };
+
+      function syncAllViews() {
+        renderDesktopBar();
+        if (dActive) renderDesktopPop();
+        if (wbListPop.classList.contains('open')) renderDesktopList();
+        if (wbMainModal.classList.contains('open')) renderMainModal();
+        renderIosHome();
+        if (iosSheetState) renderIosSheet();
+      }
+
+      function renderDesktopBar() {
+        wbLogoMood.className = 'wb-logo-mood' + (store.managerStatus === 'thinking' ? ' thinking' : '');
+        wbLogoBtn.classList.toggle('active', dActive === 'mgr' || wbMainModal.classList.contains('open'));
+
+        const groups = ORDER.map((g) => store.cases.filter((c) => c.g === g && onBar(c))).filter((l) => l.length);
+        wbBarDots.innerHTML = '';
+        groups.forEach((list, gi) => {
+          if (gi > 0) {
+            const sep = document.createElement('span');
+            sep.className = 'wb-grp-sep';
+            wbBarDots.appendChild(sep);
+          }
+          list.forEach((c) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'wb-dot-trigger' + (dActive === c.id ? ' active' : '');
+            btn.dataset.id = c.id;
+            btn.innerHTML = dotHTML(c, { bub: hasBubble(c) && dActive !== c.id });
+
+            btn.addEventListener('mouseenter', () => {
+              if (dPinned || wbListPop.classList.contains('open')) return;
+              clearTimeout(dCloseTimer);
+              openDesktopPop(c.id, btn, false);
+              if (c.g !== 'done' && !c.seen) {
+                clearTimeout(dHoverTimer);
+                dHoverTimer = setTimeout(() => {
+                  if (dActive === c.id) { c.seen = true; syncAllViews(); }
+                }, 600);
+              }
+            });
+
+            btn.addEventListener('mouseleave', () => {
+              clearTimeout(dHoverTimer);
+              scheduleClosePop();
+            });
+
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (dActive === c.id && dPinned) { closeDesktopPop(); return; }
+              if (c.g !== 'done') c.seen = true;
+              openDesktopPop(c.id, btn, true);
+            });
+
+            // Real right-click gray dot = mark seen & remove from bar
+            if (c.g === 'done') {
+              btn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                c.seen = true;
+                if (dActive === c.id) closeDesktopPop();
+                syncAllViews();
+              });
+            }
+
+            wbBarDots.appendChild(btn);
+          });
+        });
+      }
+
+      function posForTrigger(el) {
+        const winRect = deskWin.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const popW = Math.min(424, winRect.width - 24);
+        return Math.max(10, Math.min(elRect.left - winRect.left - 8, winRect.width - popW - 10));
+      }
+
+      function openDesktopPop(id, triggerEl, pin) {
+        wbListPop.classList.remove('open');
+        if (pin) wbMainModal.classList.remove('open');
+        const nextX = triggerEl ? posForTrigger(triggerEl) : dLastX;
+        const dir = dActive && dActive !== id ? Math.sign(nextX - dLastX) : 0;
+        dLastX = nextX;
+        dActive = id;
+        dPinned = pin;
+        dBarOpen = pin;
+        dArmedEnd = null;
+        wbPop.style.left = `${nextX}px`;
+        wbPop.style.setProperty('--dx', `${dir * 14}px`);
+        renderDesktopPop();
+        renderDesktopBar();
+        requestAnimationFrame(() => {
+          wbPop.classList.add('open');
+          wbPop.classList.toggle('bar-open', dBarOpen);
+        });
+      }
+
+      function closeDesktopPop() {
+        dActive = null;
+        dPinned = false;
+        dBarOpen = false;
+        dArmedEnd = null;
+        wbPop.classList.remove('open', 'bar-open');
+        renderDesktopBar();
+      }
+
+      function scheduleClosePop() {
+        if (dPinned) return;
+        clearTimeout(dCloseTimer);
+        dCloseTimer = setTimeout(() => {
+          if (!dPinned && !wbPop.matches(':hover')) closeDesktopPop();
+        }, 240);
+      }
+
+      wbPop.addEventListener('mouseenter', () => {
+        clearTimeout(dCloseTimer);
+        if (!dBarOpen) {
+          dBarOpen = true;
+          wbPop.classList.add('bar-open');
+        }
+      });
+      wbPop.addEventListener('mouseleave', () => scheduleClosePop());
+      wbPop.addEventListener('mousedown', () => {
+        if (!dPinned) { dPinned = true; dBarOpen = true; wbPop.classList.add('bar-open'); }
+      });
+
+      wbLogoBtn.addEventListener('mouseenter', () => {
+        if (dPinned || wbMainModal.classList.contains('open') || wbListPop.classList.contains('open')) return;
+        clearTimeout(dCloseTimer);
+        openDesktopPop('mgr', wbLogoBtn, false);
+      });
+      wbLogoBtn.addEventListener('mouseleave', () => scheduleClosePop());
+      wbLogoBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDesktopPop();
+        wbListPop.classList.remove('open');
+        wbMainModal.classList.toggle('open');
+        if (wbMainModal.classList.contains('open')) renderMainModal();
+        renderDesktopBar();
+      });
+
+      function renderDesktopPop() {
+        if (dActive === 'mgr') {
+          const last = store.managerTalk.filter((m) => m.who === 'me' || m.who === 'manager').slice(-3);
+          wbPopInner.innerHTML = `
+            <div class="pop-head-row">
+              <span style="font-size:14.5px;font-weight:600;">经理</span>
+              <span style="color:var(--fg3);">${store.managerStatus === 'thinking' ? '在想…' : '空闲'}</span>
+              <span class="pop-head-meta">主对话</span>
+            </div>
+            <div class="pop-thread">
+              ${last.map((m) => `
+                <div class="cr-bubble-row ${m.who === 'me' ? 'me' : ''}">
+                  ${m.who === 'me' ? `<span class="cr-time">${m.at}</span>` : ''}
+                  <div class="cr-bubble">${m.text.replace(/\n+/g, ' ')}</div>
+                  ${m.who !== 'me' ? `<span class="cr-time">${m.at}</span>` : ''}
+                </div>`).join('')}
+            </div>`;
+          wbPopBar.innerHTML = `
+            <input class="pop-inp" id="dMgrInp" placeholder="和经理说…" autocomplete="off" />
+            <button class="wb-btn round" id="dMgrExpand" type="button" title="展开主对话">⤢</button>`;
+          wbPopHint.style.display = 'none';
+          document.getElementById('dMgrInp').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+              sendToManager(e.target.value.trim());
+              e.target.value = '';
+            }
+          });
+          document.getElementById('dMgrExpand').addEventListener('click', () => {
+            closeDesktopPop();
+            wbMainModal.classList.add('open');
+            renderMainModal();
+          });
+          return;
+        }
+
+        const c = store.cases.find((x) => x.id === dActive);
+        if (!c) { closeDesktopPop(); return; }
+        const mine = c.owner === 'me' && !c.pending;
+        const word = c.owner === 'me' && !c.pending ? '你接管' : (c.g === 'wait' && c.waitingOn ? `等${c.waitingOn}` : WORD[c.g]);
+        const rest = [c.kind, c.pending === 'take_over' ? '接管中' : c.pending === 'hand_back' ? '交还中' : null].filter(Boolean);
+        const meta = [c.src, c.project, c.when].filter(Boolean).join(' · ');
+
+        wbPopInner.innerHTML = `
+          <div class="pop-head-row">
+            ${dotHTML(c)}
+            <span class="t-${c.g}" style="font-weight:500;">${word}</span>
+            ${rest.length ? `<span style="color:var(--fg2);">· ${rest.join(' · ')}</span>` : ''}
+            <span class="pop-head-meta">${meta}</span>
+          </div>
+          <div class="pop-title">${c.title}</div>
+          ${c.progress ? `<div class="pop-prog">${c.progress}</div>` : ''}
+          ${c.g === 'you' && c.ask ? `<div class="pop-ask"><span class="pop-ask-lbl">需要你</span><span>${c.ask}</span></div>` : ''}
+          <div class="pop-thread">
+            ${c.events.slice(-5).map((ev) => {
+              if (ev.actor === 'user' && ev.kind === 'reply') {
+                return `<div class="cr-bubble-row me"><span class="cr-time">${ev.at}</span><div class="cr-bubble">${ev.text}</div></div>`;
+              }
+              if (ev.actor === 'manager' && ev.kind === 'reply') {
+                return `<div class="cr-bubble-row"><div class="cr-bubble">${ev.text}</div><span class="cr-time">${ev.at}</span></div>`;
+              }
+              const mark = ev.kind === 'action' ? '✓' : ev.kind === 'inferred' ? '≈' : '·';
+              return `<div class="cr-sys">
+                <span class="cr-mark ${mark === '✓' ? 'ok' : ''}">${mark}</span>
+                <span class="cr-txt ${ev.kind === 'inferred' ? 'dim' : ''}">${ev.text}</span>
+                <span class="cr-time">${ev.at}</span>
+              </div>`;
+            }).join('')}
+          </div>`;
+
+        if (c.g === 'done') {
+          wbPopBar.innerHTML = `
+            <input class="pop-inp" id="dReplyInp" placeholder="回两句…" autocomplete="off" />
+            <button class="wb-btn round" id="dAckBtn" type="button" title="看过了，灰点从底栏消失">✓</button>`;
+          wbPopHint.textContent = '✓ 或右键底栏的点 = 看过了';
+          wbPopHint.style.display = 'block';
+          document.getElementById('dAckBtn').addEventListener('click', () => {
+            c.seen = true;
+            closeDesktopPop();
+            syncAllViews();
+          });
+        } else if (mine) {
+          wbPopBar.innerHTML = `
+            <button class="wb-btn primary" id="dOpenSess" type="button">打开会话</button>
+            <span style="flex:1;"></span>
+            <button class="wb-btn" id="dBackBtn" type="button">交还</button>
+            <button class="wb-btn ${dArmedEnd === c.id ? 'armed' : ''}" id="dEndBtn" type="button">${dArmedEnd === c.id ? '确认结束' : '结束'}</button>`;
+          wbPopHint.style.display = 'none';
+          document.getElementById('dOpenSess').addEventListener('click', () => { openTermPeek(c, true); closeDesktopPop(); });
+          document.getElementById('dBackBtn').addEventListener('click', () => triggerOwnership(c, 'hand_back'));
+        } else {
+          const busy = Boolean(c.pending);
+          wbPopBar.innerHTML = `
+            <input class="pop-inp" id="dReplyInp" placeholder="回两句…" autocomplete="off" />
+            ${c.terminal ? `<button class="wb-btn" id="dViewBtn" type="button">查看</button>` : ''}
+            <button class="wb-btn" id="dTakeBtn" type="button" ${busy ? 'disabled' : ''}>${c.pending === 'take_over' ? '接管中…' : '接管'}</button>
+            <button class="wb-btn ${dArmedEnd === c.id ? 'armed' : ''}" id="dEndBtn" type="button">${dArmedEnd === c.id ? '确认结束' : '结束'}</button>`;
+          wbPopHint.style.display = 'none';
+          document.getElementById('dViewBtn')?.addEventListener('click', () => { openTermPeek(c, false); closeDesktopPop(); });
+          document.getElementById('dTakeBtn')?.addEventListener('click', () => triggerOwnership(c, 'take_over'));
+        }
+
+        const inp = document.getElementById('dReplyInp');
+        if (inp) {
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+              quickReplyCase(c, e.target.value.trim());
+              e.target.value = '';
+            }
+          });
+        }
+
+        const endBtn = document.getElementById('dEndBtn');
+        if (endBtn) {
+          endBtn.addEventListener('click', () => {
+            if (dArmedEnd !== c.id) {
+              dArmedEnd = c.id;
+              renderDesktopPop();
+              setTimeout(() => { if (dArmedEnd === c.id) { dArmedEnd = null; if (dActive === c.id) renderDesktopPop(); } }, 3000);
+            } else {
+              dArmedEnd = null;
+              finishCase(c);
+              closeDesktopPop();
+            }
+          });
+        }
+      }
+
+      // Real Actions (shared by Desktop & iPhone)
+      function quickReplyCase(c, text) {
+        const at = nowClock();
+        c.events.push({ kind: 'reply', actor: 'user', text, at });
+        store.managerTalk.push({ who: 'me', ref: c.title, caseId: c.id, text, at });
+        store.managerStatus = 'thinking';
+        syncAllViews();
+        setTimeout(() => {
+          store.managerStatus = 'idle';
+          if (c.g === 'you') {
+            c.g = 'work';
+            c.ask = null;
+            c.progress = '经理已转达你的指令，小弟正在执行收尾。';
+          }
+          c.events.push({ kind: 'reply', actor: 'manager', text: `收到，已转达给小弟执行「${text}」，不改变托管状态。`, at: nowClock() });
+          store.managerTalk.push({ who: 'manager', text: `已将你对「${c.title}」的回复转达给小弟跟进。`, at: nowClock() });
+          syncAllViews();
+        }, 650);
+      }
+
+      function sendToManager(text) {
+        store.managerTalk.push({ who: 'me', text, at: nowClock() });
+        store.managerStatus = 'thinking';
+        syncAllViews();
+        setTimeout(() => {
+          store.managerStatus = 'idle';
+          store.managerTalk.push({ who: 'manager', text: `收到「${text}」，已记录并按当前规则安排跟进。`, at: nowClock() });
+          syncAllViews();
+        }, 650);
+      }
+
+      function triggerOwnership(c, type) {
+        if (c.pending) return;
+        c.pending = type;
+        syncAllViews();
+        setTimeout(() => {
+          c.pending = null;
+          c.owner = type === 'take_over' ? 'me' : 'agent';
+          c.events.push({
+            kind: 'action',
+            actor: 'user',
+            text: type === 'take_over' ? '已接管，终端已露出到主体并锁定自动外发' : '已交还给经理，最新上下文自动承接',
+            at: nowClock()
+          });
+          syncAllViews();
+        }, 700);
+      }
+
+      function finishCase(c) {
+        c.g = 'done';
+        c.seen = true;
+        c.owner = 'agent';
+        store.doneHistory.unshift({ id: c.id, title: c.title, progress: '由你手动结束', time: nowClock() });
+        syncAllViews();
+      }
+
+      function openTermPeek(c, taken) {
+        document.getElementById('termPeekTitle').textContent = `${taken ? '◎ 已接管会话' : '查看小弟终端（不接管）'} · ${c.project} (${c.terminal || 't0'})`;
+        document.getElementById('termPeekBody').innerHTML = `<pre style="white-space:pre-wrap;">${c.termLog || '$ status: idle'}</pre>`;
+        termPeek.classList.add('open');
+      }
+      document.getElementById('termPeekClose').addEventListener('click', () => termPeek.classList.remove('open'));
+
+      // Real ⌘K 清单 Overlay
+      function renderDesktopList() {
+        const active = store.cases.filter((c) => c.g !== 'done');
+        wbListBody.innerHTML = `
+          ${active.map((c) => `
+            <button class="list-row" data-open="${c.id}" type="button">
+              ${dotHTML(c)}
+              <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.title}</span>
+              <span style="font-size:11px;color:var(--fg3);">${c.when}</span>
+            </button>`).join('')}
+          <div style="height:1px;background:var(--line);margin:6px 4px;"></div>
+          <button class="list-fold" id="foldDec" type="button">
+            <span>今日代决（${store.decisions.length}）</span><span>${dListOpen.dec ? '▾' : '▸'}</span>
+          </button>
+          ${dListOpen.dec ? store.decisions.map((d) => `<div class="list-subitem"><span>${d.text}</span><span class="mono" style="color:var(--fg3);">${d.at}</span></div>`).join('') : ''}
+          <button class="list-fold" id="foldIgn" type="button">
+            <span>今天经理忽略了 ${store.ignoredCount} 条信号</span><span>${dListOpen.ign ? '▾' : '▸'}</span>
+          </button>
+          ${dListOpen.ign ? store.ignored.map((x) => `<div class="list-subitem"><span><b>${x.who}</b>：${x.text}</span><span style="color:var(--fg3);">${x.reason}</span></div>`).join('') : ''}
+        `;
+        wbListBody.querySelectorAll('[data-open]').forEach((b) => {
+          b.addEventListener('click', () => {
+            wbListPop.classList.remove('open');
+            const dotBtn = wbBarDots.querySelector(`[data-id="${b.dataset.open}"]`);
+            openDesktopPop(b.dataset.open, dotBtn, true);
+          });
+        });
+        document.getElementById('foldDec').addEventListener('click', () => { dListOpen.dec = !dListOpen.dec; renderDesktopList(); });
+        document.getElementById('foldIgn').addEventListener('click', () => { dListOpen.ign = !dListOpen.ign; renderDesktopList(); });
+      }
+
+      document.getElementById('wbListBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDesktopPop();
+        wbMainModal.classList.remove('open');
+        wbListPop.classList.toggle('open');
+        if (wbListPop.classList.contains('open')) renderDesktopList();
+      });
+      document.getElementById('wbListClose').addEventListener('click', () => wbListPop.classList.remove('open'));
+
+      // Real Full Manager Modal (with collapsible 「N 条后台动态」)
+      let mainEventsOpen = false;
+      function renderMainModal() {
+        document.getElementById('mgrModalState').textContent = store.managerStatus === 'thinking' ? '在想…' : '空闲';
+        wbMainThread.innerHTML = store.managerTalk.map((m) => {
+          if (m.who === 'events') {
+            return `<div>
+              <button type="button" id="toggleBgEv" style="font-size:11.5px;color:var(--fg3);">· ${m.items.length} 条后台动态 ${mainEventsOpen ? '▾' : '▸'}</button>
+              ${mainEventsOpen ? m.items.map((t) => `<div style="font-size:11.5px;color:var(--fg3);padding:3px 0 0 12px;">${t}</div>`).join('') : ''}
+            </div>`;
+          }
+          if (m.who === 'note') return `<div style="font-size:12px;color:var(--fg3);">${m.text}</div>`;
+          if (m.who === 'me') {
+            return `<div style="display:flex;justify-content:flex-end;">
+              <div style="max-width:75%;padding:7px 11px;border-radius:11px;background:var(--surface);font-size:12.5px;">
+                ${m.ref ? `<div style="font-size:11px;color:var(--fg3);margin-bottom:2px;">${m.ref}</div>` : ''}
+                <div>${m.text}</div>
+              </div>
+            </div>`;
+          }
+          return `<div style="font-size:12.8px;line-height:1.65;color:var(--fg);white-space:pre-line;">${m.text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')}</div>`;
+        }).join('');
+        document.getElementById('toggleBgEv')?.addEventListener('click', () => { mainEventsOpen = !mainEventsOpen; renderMainModal(); });
+        wbMainThread.scrollTop = wbMainThread.scrollHeight;
+      }
+
+      document.getElementById('wbMainClose').addEventListener('click', () => { wbMainModal.classList.remove('open'); renderDesktopBar(); });
+      document.getElementById('wbMainForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inp = document.getElementById('wbMainInp');
+        if (inp.value.trim()) { sendToManager(inp.value.trim()); inp.value = ''; }
+      });
+
+      // Real MR Right Drawer toggle
+      const mrBtn = document.getElementById('mrBtn');
+      const mrDrawer = document.getElementById('mrDrawer');
+      mrBtn.addEventListener('click', () => {
+        mrBtn.classList.toggle('active');
+        mrDrawer.classList.toggle('open');
+      });
+
+      // Global shortcuts: ⌘K opens 清单, ESC closes popups
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          closeDesktopPop();
+          wbMainModal.classList.remove('open');
+          wbListPop.classList.toggle('open');
+          if (wbListPop.classList.contains('open')) renderDesktopList();
+        } else if (e.key === 'Escape') {
+          closeDesktopPop();
+          wbListPop.classList.remove('open');
+          wbMainModal.classList.remove('open');
+          termPeek.classList.remove('open');
+        }
+      });
+
+      // ======================================================================
+      // 4. Cinematic Animated Story-Flow Engine (4 Playable Real Scenarios)
+      // ======================================================================
+      const scenes = [
+        {
+          pill: 'SCENE 01 · 挡掉噪音',
+          caption: '约 80% 无关闲聊与系统通知在门童处直接归入「可查」，主窗口与底栏纹丝不动。',
+          color: 'var(--done)',
+          steps: [
+            { t: 0,    x: 11,   y: 44,   tag: '群聊闲聊 / 系统通知', lit: ['n-sig'], path: '', bar: 'done', barTxt: '安静，无新打扰' },
+            { t: 1000, x: 26.5, y: 44,   tag: '门童：规则匹配无需处理', lit: ['n-gate'], path: 'p-sig-gate', bar: 'done', barTxt: '门童拦截中…' },
+            { t: 2300, x: 39,   y: 73,   tag: '静默归档「可查」', lit: ['n-ign'], path: 'p-gate-ign', bar: 'done', barTxt: '已忽略 +1 · 主窗口零打扰' }
+          ]
+        },
+        {
+          pill: 'SCENE 02 · 自动闭环',
+          caption: '故障反馈过门童后由经理派工小弟排查，经受控发送口回执，底栏蓝 → 紫 → 灰静默完成。',
+          color: 'var(--work)',
+          steps: [
+            { t: 0,    x: 11,   y: 44,   tag: '单聊反馈：回调超时', lit: ['n-sig'], path: '', bar: 'done', barTxt: '收到新信号' },
+            { t: 900,  x: 26.5, y: 44,   tag: '门童放行', lit: ['n-gate'], path: 'p-sig-gate', bar: 'done', barTxt: '语义放行' },
+            { t: 1700, x: 44.5, y: 32.6, tag: '经理归并并派工', lit: ['n-mgr'], path: 'p-gate-mgr', bar: 'work', barTxt: '● 蓝点亮起 · 小弟已接单' },
+            { t: 2600, x: 63.5, y: 32.6, tag: '小弟排查定位根因', lit: ['n-wrk'], path: 'p-mgr-wrk', bar: 'work', barTxt: '● 蓝点 · 工程目录排查中' },
+            { t: 3600, x: 79.5, y: 54.3, tag: 'wb send 校验并回执', lit: ['n-snd'], path: 'p-wrk-snd', bar: 'done', barTxt: '● 灰点 · 自动闭环，留痕可查' }
+          ]
+        },
+        {
+          pill: 'SCENE 03 · 卡点等你',
+          caption: '核心服务 MR 审完后按策略需你终审，底栏轻轻亮起带红点的黄点，回一句即继续闭环。',
+          color: 'var(--you)',
+          steps: [
+            { t: 0,    x: 11,   y: 44,   tag: 'MR 链接：core-api!418', lit: ['n-sig'], path: '', bar: 'done', barTxt: '收到 MR 评审请求' },
+            { t: 950,  x: 44.5, y: 32.6, tag: '经理派给小弟审查', lit: ['n-mgr'], path: 'p-gate-mgr', bar: 'work', barTxt: '● 蓝点 · 代码审查中' },
+            { t: 1950, x: 63.5, y: 32.6, tag: '单测通过，核心仓需终审', lit: ['n-wrk'], path: 'p-mgr-wrk', bar: 'work', barTxt: '● 蓝点 · 产出评审结论' },
+            { t: 3100, x: 50,   y: 86.5, tag: '点亮黄点 + 红气泡', lit: [], path: 'p-wrk-bar', bar: 'you-bub', barTxt: '● 黄点等你 · 悬停一句话放行' }
+          ]
+        },
+        {
+          pill: 'SCENE 04 · 离席推手机',
+          caption: 'macOS 键鼠静默满 10 分钟后，未读黄点沿加密 SSH 通道直达 iPhone，通勤原地接管。',
+          color: 'var(--wait)',
+          steps: [
+            { t: 0,    x: 50,   y: 86.5, tag: '桌面有未读黄点', lit: [], path: '', bar: 'you-bub', barTxt: '● 桌面黄点未读' },
+            { t: 1200, x: 50,   y: 86.5, tag: 'HID 静默 ≥ 10 分钟', lit: [], path: '', bar: 'you-bub', barTxt: '检测到已离开电脑…' },
+            { t: 2400, x: 88.5, y: 32.6, tag: 'APNs + SSH 90ms 同步', lit: ['n-ios'], path: 'p-ssh-ios', bar: 'ring', barTxt: '◎ iPhone 原地接管，桌面同步' }
+          ]
+        }
+      ];
+
+      let sceneIdx = 0;
+      let sceneTimers = [];
+      let progRaf = null;
+      const orb = document.getElementById('signalOrb');
+      const orbTag = document.getElementById('signalTag');
+      const pa1 = document.getElementById('pa-1');
+      const cinemaDot = document.getElementById('cinemaDot');
+      const cinemaBarText = document.getElementById('cinemaBarText');
+      const cinemaProg = document.getElementById('cinemaProg');
+
+      function setCinemaDot(mode) {
+        if (mode === 'you-bub') {
+          cinemaDot.innerHTML = `<span class="wb-dot-ring"><span class="wb-dot-core c-you"></span></span><span class="wb-dot-bub"></span>`;
+        } else if (mode === 'ring') {
+          cinemaDot.innerHTML = `<span class="wb-dot-ring ring-solid"><span class="wb-dot-core c-work"></span></span>`;
+        } else {
+          cinemaDot.innerHTML = `<span class="wb-dot-ring"><span class="wb-dot-core c-${mode}"></span></span>`;
+        }
+      }
+
+      function playScene(idx, autoNext = true) {
+        sceneIdx = idx;
+        sceneTimers.forEach(clearTimeout);
+        sceneTimers = [];
+        cancelAnimationFrame(progRaf);
+
+        document.querySelectorAll('.story-tab').forEach((b, i) => b.classList.toggle('active', i === idx));
+        const sc = scenes[idx];
+        document.getElementById('cinemaStepPill').textContent = sc.pill;
+        document.getElementById('cinemaCaption').textContent = sc.caption;
+
+        const allNodes = ['n-sig', 'n-gate', 'n-ign', 'n-mgr', 'n-wrk', 'n-snd', 'n-ios'];
+        const duration = 5600;
+        const t0 = performance.now();
+
+        function tickProg(now) {
+          const pct = Math.min(100, ((now - t0) / duration) * 100);
+          cinemaProg.style.width = `${pct}%`;
+          if (pct < 100) progRaf = requestAnimationFrame(tickProg);
+        }
+        progRaf = requestAnimationFrame(tickProg);
+
+        orb.style.transition = 'none';
+        orb.style.opacity = '1';
+        orb.style.background = sc.color;
+
+        sc.steps.forEach((st, si) => {
+          const id = setTimeout(() => {
+            allNodes.forEach((nid) => {
+              const el = document.getElementById(nid);
+              el.classList.remove('lit', 'lit-you', 'lit-work', 'lit-wait', 'dimmed');
+              if (st.lit.includes(nid)) {
+                el.classList.add('lit');
+                if (sc.color.includes('you')) el.classList.add('lit-you');
+                else if (sc.color.includes('work')) el.classList.add('lit-work');
+                else if (sc.color.includes('wait')) el.classList.add('lit-wait');
+              } else {
+                el.classList.add('dimmed');
+              }
+            });
+
+            if (si > 0) orb.style.transition = 'left 0.82s cubic-bezier(0.16, 1, 0.3, 1), top 0.82s cubic-bezier(0.16, 1, 0.3, 1)';
+            orb.style.left = `${st.x}%`;
+            orb.style.top = `${st.y}%`;
+            orbTag.textContent = st.tag;
+
+            pa1.classList.remove('run');
+            if (st.path) {
+              const srcPath = document.getElementById(st.path);
+              pa1.setAttribute('d', srcPath.getAttribute('d'));
+              pa1.style.stroke = sc.color;
+              void pa1.offsetWidth;
+              pa1.classList.add('run');
+            } else {
+              pa1.setAttribute('d', '');
+            }
+
+            setCinemaDot(st.bar);
+            cinemaBarText.textContent = st.barTxt;
+          }, st.t);
+          sceneTimers.push(id);
+        });
+
+        if (autoNext) {
+          sceneTimers.push(setTimeout(() => playScene((idx + 1) % scenes.length, true), duration));
+        }
+      }
+
+      document.querySelectorAll('.story-tab').forEach((btn) => {
+        btn.addEventListener('click', () => playScene(Number(btn.dataset.scene), true));
+      });
+      document.getElementById('cinemaReplay').addEventListener('click', () => playScene(sceneIdx, true));
+
+      // ======================================================================
+      // 5. Authentic Native iPhone Companion Engine (Synced with Desktop Store)
+      // ======================================================================
+      const iosRail = document.getElementById('iosRail');
+      const iosListCol = document.getElementById('iosListCol');
+      const iosHeroTitle = document.getElementById('iosHeroTitle');
+      const iosHeroCount = document.getElementById('iosHeroCount');
+      const iosHomeView = document.getElementById('iosHomeView');
+      const iosAgentView = document.getElementById('iosAgentView');
+      const iosSwHome = document.getElementById('iosSwHome');
+      const iosSwAgent = document.getElementById('iosSwAgent');
+      const iosGearBtn = document.getElementById('iosGearBtn');
+      const iosGearMenu = document.getElementById('iosGearMenu');
+      const iosBackdrop = document.getElementById('iosBackdrop');
+      const iosSheet = document.getElementById('iosSheet');
+      const iosSheetHead = document.getElementById('iosSheetHead');
+      const iosSheetScroll = document.getElementById('iosSheetScroll');
+      const iosSheetFoot = document.getElementById('iosSheetFoot');
+      const iosToast = document.getElementById('iosToast');
+
+      let iosRailSel = 'all';      // all | you | work | wait | done | history
+      let iosHistTab = 'done';     // done | decide
+      let iosSheetState = null;    // { type: 'case', id } | { type: 'mgr' } | null
+      let iosArmedEnd = false;
+      let iosMgrEventsOpen = false;
+      let iosToastTimer = null;
+
+      function flashIos(msg) {
+        iosToast.textContent = msg;
+        iosToast.classList.add('show');
+        clearTimeout(iosToastTimer);
+        iosToastTimer = setTimeout(() => iosToast.classList.remove('show'), 2200);
+      }
+
+      function setIosMainTab(tab) {
+        const isAgent = tab === 'agent';
+        iosHomeView.classList.toggle('hidden', isAgent);
+        iosAgentView.classList.toggle('open', isAgent);
+        iosSwHome.classList.toggle('active', !isAgent);
+        iosSwAgent.classList.toggle('active', isAgent);
+        iosGearMenu.classList.remove('open');
+      }
+      iosSwHome.addEventListener('click', () => setIosMainTab('home'));
+      iosSwAgent.addEventListener('click', () => setIosMainTab('agent'));
+
+      iosGearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        iosGearMenu.classList.toggle('open');
+      });
+      iosGearMenu.querySelectorAll('.ios-gear-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          iosGearMenu.classList.remove('open');
+          flashIos(`已打开「${item.firstElementChild.textContent}」`);
+        });
+      });
+
+      function iosCount(g) {
+        const listed = store.cases.filter(onBar);
+        return g ? listed.filter((c) => c.g === g).length : listed.length;
+      }
+
+      function renderIosHome() {
+        // Manager pill status
+        document.getElementById('iosMgrDot').style.background = store.managerStatus === 'thinking' ? 'var(--work)' : 'var(--fg3)';
+        document.getElementById('iosMgrWord').textContent = store.managerStatus === 'thinking' ? '在想…' : '空闲';
+
+        // Hero title + count
+        const titles = { all: '全部', you: '等你', work: '在做', wait: '等对方', done: '已结束', history: '历史' };
+        iosHeroTitle.textContent = titles[iosRailSel];
+        iosHeroCount.textContent = iosRailSel === 'history' ? '' : String(iosCount(iosRailSel === 'all' ? null : iosRailSel));
+
+        // Left Piano-Key Rail
+        const railKeys = [
+          { id: 'all', lbl: '全部', g: null },
+          { id: 'you', lbl: '等你', g: 'you' },
+          { id: 'work', lbl: '在做', g: 'work' },
+          { id: 'wait', lbl: '等对方', g: 'wait' },
+          { id: 'done', lbl: '已结束', g: 'done' },
+          { id: 'history', lbl: '历史', hist: true }
+        ];
+        iosRail.innerHTML = railKeys.map((k) => {
+          const active = iosRailSel === k.id;
+          if (k.hist) {
+            return `<div class="rail-div"></div>
+              <button class="rail-key ${active ? 'active' : ''}" data-rail="history" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span class="rail-lbl">历史</span>
+              </button>`;
+          }
+          const n = iosCount(k.g);
+          return `<button class="rail-key ${active ? 'active' : ''}" data-rail="${k.id}" type="button">
+            <span class="rail-top ${n === 0 && !active ? 'zero' : ''}">
+              ${k.g ? `<span class="rail-dot c-${k.g}"></span>` : ''}
+              <span>${n}</span>
+            </span>
+            <span class="rail-lbl">${k.lbl}</span>
+          </button>`;
+        }).join('');
+
+        // Right List Content
+        if (iosRailSel === 'history') {
+          iosListCol.innerHTML = `
+            <div class="ios-hist-seg">
+              <button type="button" class="${iosHistTab === 'done' ? 'active' : ''}" id="histDoneBtn">已结束</button>
+              <button type="button" class="${iosHistTab === 'decide' ? 'active' : ''}" id="histDecBtn">今日代决</button>
+            </div>
+            ${iosHistTab === 'done' ? `
+              ${store.doneHistory.map((h) => `
+                <div class="ios-row" style="cursor:default;">
+                  <span style="color:var(--fg3);font-size:12px;padding-top:2px;">✓</span>
+                  <div class="ios-row-mid">
+                    <div class="ios-row-title" style="font-size:14.5px;">${h.title}</div>
+                    <div class="ios-row-sub">${h.progress}</div>
+                  </div>
+                  <span class="ios-row-time">${h.time}</span>
+                </div>`).join('')}
+              <div style="padding:12px 0;font-size:12.5px;color:var(--fg3);">今天经理忽略了 ${store.ignoredCount} 条信号</div>
+            ` : store.decisions.map((d) => `
+              <div class="ios-row" style="cursor:default;">
+                <span style="color:var(--fg3);font-size:12px;padding-top:2px;">⚖</span>
+                <div class="ios-row-mid">
+                  <div class="ios-row-title" style="font-size:14.5px;">${d.text}</div>
+                  <div class="ios-row-sub">${d.title}</div>
+                </div>
+                <span class="ios-row-time">${d.at}</span>
+              </div>`).join('')}
+          `;
+          document.getElementById('histDoneBtn').addEventListener('click', () => { iosHistTab = 'done'; renderIosHome(); });
+          document.getElementById('histDecBtn').addEventListener('click', () => { iosHistTab = 'decide'; renderIosHome(); });
+          return;
+        }
+
+        const groups = (iosRailSel === 'all' ? ORDER : [iosRailSel])
+          .map((g) => ({ g, items: store.cases.filter((c) => c.g === g && onBar(c)) }))
+          .filter((x) => x.items.length);
+
+        if (!groups.length) {
+          iosListCol.innerHTML = `<div style="padding:28px 6px;font-size:14px;color:var(--fg3);">这一栏很安静，手上没有事</div>`;
+          return;
+        }
+
+        iosListCol.innerHTML = groups.map(({ g, items }) => `
+          ${iosRailSel === 'all' ? `<div class="ios-sec-head">${SHORT_WORD[g]} <span>${items.length}</span></div>` : ''}
+          ${items.map((c) => `
+            <button class="ios-row" data-case="${c.id}" type="button">
+              ${dotHTML(c, { bub: hasBubble(c), ios: true })}
+              <div class="ios-row-mid">
+                <div class="ios-row-title">${c.title}</div>
+                <div class="ios-row-sub">${c.g === 'you' && c.ask ? c.ask : c.progress}</div>
+              </div>
+              <span class="ios-row-time">${c.when}</span>
+            </button>`).join('')}
+        `).join('');
+
+        iosListCol.querySelectorAll('[data-case]').forEach((row) => {
+          row.addEventListener('click', () => {
+            const c = store.cases.find((x) => x.id === row.dataset.case);
+            if (!c) return;
+            if (hasBubble(c)) { c.seen = true; }
+            openIosSheet({ type: 'case', id: c.id });
+            syncAllViews();
+          });
+        });
+      }
+
+      // Real Piano-Key Drag Gesture on Left Rail!
+      let draggingRail = false;
+      function pickRailAt(clientY) {
+        const keys = [...iosRail.querySelectorAll('.rail-key')];
+        for (const k of keys) {
+          const r = k.getBoundingClientRect();
+          if (clientY >= r.top - 2 && clientY <= r.bottom + 2) {
+            if (iosRailSel !== k.dataset.rail) {
+              iosRailSel = k.dataset.rail;
+              renderIosHome();
+            }
+            break;
+          }
+        }
+      }
+      iosRail.addEventListener('pointerdown', (e) => {
+        draggingRail = true;
+        iosRail.setPointerCapture?.(e.pointerId);
+        pickRailAt(e.clientY);
+      });
+      iosRail.addEventListener('pointermove', (e) => {
+        if (draggingRail) pickRailAt(e.clientY);
+      });
+      window.addEventListener('pointerup', () => { draggingRail = false; });
+
+      // Slide-Up Bottom Sheets (WorkbenchCaseSheet & WorkbenchManagerView)
+      function openIosSheet(state) {
+        iosSheetState = state;
+        iosArmedEnd = false;
+        renderIosSheet();
+        iosBackdrop.classList.add('open');
+        iosSheet.classList.add('open');
+      }
+      function closeIosSheet() {
+        iosSheetState = null;
+        iosArmedEnd = false;
+        iosBackdrop.classList.remove('open');
+        iosSheet.classList.remove('open');
+      }
+      iosBackdrop.addEventListener('click', closeIosSheet);
+      document.getElementById('iosMgrPill').addEventListener('click', () => openIosSheet({ type: 'mgr' }));
+
+      function renderIosSheet() {
+        if (!iosSheetState) return;
+        if (iosSheetState.type === 'mgr') {
+          iosSheetHead.innerHTML = `
+            <span style="display:inline-flex;align-items:center;gap:7px;">
+              <span class="wb-dot-core" style="width:8px;height:8px;background:${store.managerStatus === 'thinking' ? 'var(--work)' : 'var(--fg3)'};"></span>
+              <b style="font-size:15.5px;">经理</b>
+              <span style="font-size:13.5px;color:var(--fg3);">${store.managerStatus === 'thinking' ? '在想…' : '空闲'}</span>
+            </span>
+            <button class="ios-x" id="iosCloseBtn" type="button">×</button>`;
+          iosSheetScroll.innerHTML = `
+            <div style="text-align:center;font-size:11.5px;color:var(--fg3);padding:6px 0 12px;">今天</div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              ${store.managerTalk.map((m) => {
+                if (m.who === 'events') {
+                  return `<div>
+                    <button type="button" id="iosFoldEv" style="font-size:12px;color:var(--fg3);">· ${m.items.length} 条后台动态 ${iosMgrEventsOpen ? '▾' : '▸'}</button>
+                    ${iosMgrEventsOpen ? m.items.map((x) => `<div style="font-size:12.5px;color:var(--fg3);padding-top:4px;">${x}</div>`).join('') : ''}
+                  </div>`;
+                }
+                if (m.who === 'note') return `<div style="font-size:13px;color:var(--fg3);">${m.text}</div>`;
+                if (m.who === 'me') {
+                  return `<div class="cg-user">
+                    ${m.ref ? `<div style="font-size:11.5px;color:var(--fg3);margin-bottom:2px;">${m.ref} ›</div>` : ''}
+                    <div>${m.text}</div>
+                  </div>`;
+                }
+                return `<div class="cg-answer">${m.text.replace(/\n\n/g, '</p><p>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</div>`;
+              }).join('')}
+            </div>`;
+          iosSheetFoot.innerHTML = `
+            <input class="ios-composer-inp" id="iosMgrInp" placeholder="跟经理说" autocomplete="off" />
+            <button class="ios-send-circle" id="iosMgrSend" type="button">↑</button>`;
+          document.getElementById('iosCloseBtn').addEventListener('click', closeIosSheet);
+          document.getElementById('iosFoldEv')?.addEventListener('click', () => { iosMgrEventsOpen = !iosMgrEventsOpen; renderIosSheet(); });
+          const sendMgr = () => {
+            const inp = document.getElementById('iosMgrInp');
+            if (inp.value.trim()) { sendToManager(inp.value.trim()); inp.value = ''; }
+          };
+          document.getElementById('iosMgrSend').addEventListener('click', sendMgr);
+          document.getElementById('iosMgrInp').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMgr(); });
+          return;
+        }
+
+        // Real WorkbenchCaseSheet
+        const c = store.cases.find((x) => x.id === iosSheetState.id);
+        if (!c) { closeIosSheet(); return; }
+        const mine = c.owner === 'me' && !c.pending;
+        const stWord = mine ? '你接管' : SHORT_WORD[c.g];
+        const meta = [c.src, c.project, c.when].filter(Boolean).join(' · ');
+
+        iosSheetHead.innerHTML = `
+          <div>
+            ${c.g === 'done'
+              ? (!c.seen ? `<button class="ios-pill-btn" id="iosSeenBtn" type="button">✓ 看过了</button>` : '')
+              : `<button class="ios-pill-btn danger ${iosArmedEnd ? 'armed' : ''}" id="iosEndBtn" type="button">${iosArmedEnd ? '确认结束' : '结束'}</button>`}
+          </div>
+          <div class="ios-sheet-center">
+            ${dotHTML(c, { ios: true })}
+            <span class="${mine ? '' : 't-' + c.g}">${stWord}</span>
+            ${c.kind ? `<span style="color:var(--fg3);font-weight:400;">· ${c.kind}</span>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            ${!mine && c.g !== 'done' ? `<button class="ios-pill-btn" id="iosTakeBtn" type="button">${c.pending === 'take_over' ? '接管中…' : '接管'}</button>` : ''}
+            <button class="ios-x" id="iosCloseBtn" type="button">×</button>
+          </div>`;
+
+        iosSheetScroll.innerHTML = `
+          ${iosArmedEnd ? `<div style="font-size:12px;color:var(--bad);margin-bottom:8px;">结束后不能恢复；还在跑的小弟会被停下。3 秒内再点一次确认。</div>` : ''}
+          <div style="font-size:20px;font-weight:600;line-height:1.3;">${c.title}</div>
+          <div style="font-size:12.5px;color:var(--fg3);margin-top:5px;">${meta}</div>
+          <div style="font-size:14.5px;color:var(--fg);line-height:1.6;margin-top:12px;">${c.progress}</div>
+          ${c.g === 'you' && c.ask ? `
+            <div style="margin-top:14px;padding:12px 14px;border-radius:16px;background:var(--you-bg);">
+              <div style="font-size:12px;font-weight:600;color:var(--you);margin-bottom:4px;">需要你</div>
+              <div style="font-size:14.5px;font-weight:500;line-height:1.55;">${c.ask}</div>
+            </div>` : ''}
+          <div style="margin-top:20px;margin-bottom:8px;display:flex;justify-content:space-between;font-size:12.5px;color:var(--fg2);font-weight:600;">
+            <span>经过</span><span style="color:var(--fg3);font-weight:400;">${c.events.length} 条</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            ${c.events.map((ev) => {
+              if (ev.actor === 'user' && ev.kind === 'reply') {
+                return `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+                  <span style="font-size:10.5px;color:var(--fg3);">${ev.at}</span>
+                  <div style="max-width:82%;padding:8px 13px;border-radius:18px;background:var(--surface);font-size:14px;">${ev.text}</div>
+                </div>`;
+              }
+              if (ev.actor === 'manager' && ev.kind === 'reply') {
+                return `<div>
+                  <div style="font-size:11.5px;color:var(--fg3);margin-bottom:3px;">经理 · ${ev.at}</div>
+                  <div style="font-size:14px;line-height:1.55;">${ev.text}</div>
+                </div>`;
+              }
+              return `<div style="display:flex;align-items:baseline;gap:8px;font-size:13.5px;line-height:1.5;">
+                <span class="mono" style="width:12px;color:${ev.kind === 'action' ? 'var(--fg)' : 'var(--fg3)'};">${ev.kind === 'action' ? '✓' : '≈'}</span>
+                <span style="flex:1;color:${ev.kind === 'inferred' ? 'var(--fg3)' : 'var(--fg2)'};">${ev.text}</span>
+                <span style="font-size:11px;color:var(--fg3);">${ev.at}</span>
+              </div>`;
+            }).join('')}
+          </div>`;
+
+        if (mine) {
+          iosSheetFoot.innerHTML = `
+            <button class="ios-pill-btn primary" id="iosOpenSess" type="button">›_ 打开会话</button>
+            <button class="ios-pill-btn big" id="iosBackBtn" type="button">${c.pending === 'hand_back' ? '交还中…' : '交还'}</button>`;
+          document.getElementById('iosOpenSess').addEventListener('click', () => {
+            document.getElementById('iosAgentTitle').textContent = c.title;
+            closeIosSheet();
+            setIosMainTab('agent');
+          });
+          document.getElementById('iosBackBtn').addEventListener('click', () => {
+            triggerOwnership(c, 'hand_back');
+            flashIos('已交还给经理');
+          });
+        } else {
+          iosSheetFoot.innerHTML = `
+            <input class="ios-composer-inp" id="iosReplyInp" placeholder="一句话回复，经理转达" autocomplete="off" />
+            <button class="ios-send-circle" id="iosReplySend" type="button">↑</button>`;
+          const sendCase = () => {
+            const inp = document.getElementById('iosReplyInp');
+            if (inp.value.trim()) {
+              quickReplyCase(c, inp.value.trim());
+              inp.value = '';
+              flashIos('已发给经理转达');
+            }
+          };
+          document.getElementById('iosReplySend').addEventListener('click', sendCase);
+          document.getElementById('iosReplyInp').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendCase(); });
+        }
+
+        document.getElementById('iosCloseBtn').addEventListener('click', closeIosSheet);
+        document.getElementById('iosSeenBtn')?.addEventListener('click', () => {
+          c.seen = true;
+          closeIosSheet();
+          flashIos('看过了，已进历史');
+          syncAllViews();
+        });
+        document.getElementById('iosTakeBtn')?.addEventListener('click', () => {
+          triggerOwnership(c, 'take_over');
+          flashIos('已接管，会话在电脑上也打开了');
+        });
+        document.getElementById('iosEndBtn')?.addEventListener('click', () => {
+          if (!iosArmedEnd) {
+            iosArmedEnd = true;
+            renderIosSheet();
+            setTimeout(() => { if (iosArmedEnd) { iosArmedEnd = false; renderIosSheet(); } }, 3000);
+          } else {
+            finishCase(c);
+            closeIosSheet();
+            flashIos('已结束');
+          }
+        });
+      }
+
+      // iPhone Agent View composer ("发送会接管这件事")
+      document.getElementById('iosAgentForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inp = document.getElementById('iosAgentInp');
+        const val = inp.value.trim();
+        if (!val) return;
+        const chat = document.getElementById('iosAgentChat');
+        chat.insertAdjacentHTML('beforeend', `<div class="cg-user">${val}</div>`);
+        inp.value = '';
+        flashIos('已接管该事项并直接发往小弟终端');
+        chat.scrollTop = chat.scrollHeight;
+      });
+
+      // Click outside desktop popups closes them
+      deskWin.addEventListener('click', (e) => {
+        if (!e.target.closest('#wbPop') && !e.target.closest('#wbBar')) {
+          if (dPinned) closeDesktopPop();
+          wbListPop.classList.remove('open');
+        }
+      });
+
+      // Boot all live views!
+      syncAllViews();
+      // Gently peek the first yellow dot briefly on load? Better: keep desktop calm, open on hover/click,
+      // and start the animated story cinema automatically!
+      playScene(0, true);
+    })();
+  </script>
+</body>
+</html>
