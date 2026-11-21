@@ -262,17 +262,93 @@
       letter-spacing: -0.02em;
     }
 
-    .brand-logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+    /* Gentle alive motion for Watchman (Nav logo, iOS Manager pill, Hero D2) */
+    @keyframes wmAlive {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      35% { transform: translateY(-1.8px) rotate(-2.2deg); }
+      70% { transform: translateY(-0.8px) rotate(2.2deg); }
+    }
+    .wm-alive {
+      animation: wmAlive 4.2s ease-in-out infinite;
+      transform-origin: center 65%;
+    }
+    .wm-live-dot {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 6.5px;
+      height: 6.5px;
+      border-radius: 50%;
+      background: var(--work);
+      border: 1.3px solid var(--bg);
+      animation: pulseMood 1.8s ease-in-out infinite alternate;
+    }
+
+    /* Authentic Minimal macOS Desktop Frame (Instantly recognizable as macOS, zero text needed) */
+    .macos-frame {
+      border-radius: 18px;
+      background: radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--work) 7%, var(--bg-subtle)), var(--bg-subtle) 58%, color-mix(in srgb, var(--wait) 5%, var(--bg-subtle)));
       border: 1px solid var(--line-strong);
-      background: var(--sheet);
+      box-shadow: var(--shadow-window);
+      overflow: hidden;
+    }
+    .macos-menubar {
+      height: 28px;
+      padding: 0 14px;
+      background: color-mix(in srgb, var(--sheet) 78%, transparent);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--fg);
+      user-select: none;
+    }
+    .mb-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .mb-apple { font-size: 13px; line-height: 1; opacity: 0.9; }
+    .mb-app { font-weight: 600; letter-spacing: -0.01em; }
+    .mb-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--fg2);
+      font-variant-numeric: tabular-nums;
+    }
+    .mb-wb-menu {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: color-mix(in srgb, var(--fg) 6%, transparent);
+      color: var(--fg);
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .mb-wb-count {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--you);
+    }
+    .macos-wallpaper {
+      padding: 16px 18px 18px;
+    }
+
+    .brand-logo {
+      position: relative;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       color: var(--fg);
-      box-shadow: var(--shadow-sm);
     }
     .brand-dots {
       display: grid;
@@ -342,10 +418,10 @@
     .hero-sentinel {
       position: relative;
       max-width: 780px;
-      height: 176px;
-      margin: 26px auto 34px;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
-      mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+      height: 184px;
+      margin: 18px auto 34px;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
     }
     .hero-sentinel canvas {
       width: 100%;
@@ -357,17 +433,17 @@
       left: 46%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 50px;
-      height: 50px;
-      border-radius: 14px;
-      background: var(--sheet);
-      border: 1px solid var(--line-strong);
-      box-shadow: var(--shadow-md);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--bg) 92%, transparent) 46%, transparent 74%);
       display: flex;
       align-items: center;
       justify-content: center;
       pointer-events: none;
       z-index: 4;
+      color: var(--fg);
+      transition: transform 0.35s var(--ease);
     }
     .hero-sentinel-lbl {
       position: absolute;
@@ -530,14 +606,14 @@
     }
 
     .desk-win {
-      border-radius: 14px;
+      border-radius: 12px;
       background: var(--bg);
-      box-shadow: var(--shadow-window);
+      box-shadow: 0 18px 46px -10px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--line-strong);
       overflow: hidden;
       position: relative;
       display: flex;
       flex-direction: column;
-      height: 580px;
+      height: 560px;
     }
 
     .desk-top {
@@ -552,8 +628,11 @@
       flex-shrink: 0;
     }
 
-    .desk-lights { display: flex; gap: 7px; width: 76px; }
-    .desk-lights span { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
+    .desk-lights { display: flex; gap: 7px; width: 72px; align-items: center; }
+    .desk-lights span { width: 11px; height: 11px; border-radius: 50%; }
+    .desk-lights span:nth-child(1) { background: #ff5f57; }
+    .desk-lights span:nth-child(2) { background: #febc2e; }
+    .desk-lights span:nth-child(3) { background: #28c840; }
 
     .desk-tabs {
       display: flex;
@@ -2214,7 +2293,10 @@
       .hero { padding: 48px 0 68px; }
       .hero-head { margin-bottom: 18px; }
       .hero-sentinel { height: 148px; margin: 16px auto 22px; }
-      .hero-sentinel-wm { width: 44px; height: 44px; border-radius: 12px; }
+      .hero-sentinel-wm { width: 44px; height: 44px; }
+      .macos-wallpaper { padding: 10px 10px 12px; }
+      .macos-menubar { height: 26px; padding: 0 10px; font-size: 11px; }
+      .desk-win { height: 500px; }
       .hero-sentinel-lbl.l { left: 6%; }
       .hero-sentinel-lbl.r { right: 6%; }
       .spec-stage { height: 276px; }
@@ -2263,7 +2345,8 @@
     <div class="container nav-inner">
       <a href="#top" class="brand">
         <span class="brand-logo" aria-hidden="true">
-          <span class="watchman-icon" style="width:20px;height:20px;"></span>
+          <span class="watchman-icon wm-alive" style="width:21px;height:21px;"></span>
+          <span class="wm-live-dot"></span>
         </span>
         <span>守夜人</span>
       </a>
@@ -2291,42 +2374,41 @@
          ====================================================================== -->
     <section class="hero" id="desktop">
       <div class="container">
-        <div class="hero-head reveal is-visible">
-          <div class="hero-pill">
-            <span class="mini-dots" aria-hidden="true">
-              <span class="c-you"></span><span class="c-work"></span><span class="c-wait"></span><span class="c-done"></span>
-            </span>
-            <span class="only-desk">守夜人 · macOS &amp; iPhone 个人 Agent 任务工作台</span><span class="only-mob">macOS &amp; iPhone · Agent 任务工作台</span>
-          </div>
-
+        <div class="hero-head reveal is-visible" style="margin-bottom: 10px;">
           <h1 class="h1">
-            <span class="only-desk">让系统在余光里安静运转，<br />把注意力留给深度思考。</span>
-            <span class="only-mob">系统在余光里运转，<br />把专注留给思考。</span>
+            注意力只够三条线程，<br />
+            其余交给守夜人。
           </h1>
-
-          <p class="sub">
-            <span class="only-desk">主体只留你正在深入思考的对话，所有自动化的事收进底栏一行彩点。</span>
-            <span class="only-mob">主体只留深度对话，自动化收进底栏彩点。</span>
-          </p>
         </div>
 
         <!-- Hero Living Emblem: D2 Active Custody + Calm Focus Wave -->
         <div class="hero-sentinel reveal is-visible" aria-label="守夜人主动捕获外部任务，守护右侧深度心流">
           <canvas id="heroD2Canvas"></canvas>
-          <div class="hero-sentinel-wm">
-            <span class="watchman-icon" style="width:28px;height:28px;"></span>
+          <div class="hero-sentinel-wm" id="heroD2Wm">
+            <span class="watchman-icon wm-alive" style="width:38px;height:38px;"></span>
           </div>
           <span class="hero-sentinel-lbl l">外部任务</span>
           <span class="hero-sentinel-lbl r">深度心流</span>
         </div>
 
         <div class="desk-wrap reveal is-visible">
-          <div class="demo-caption">
-            <span class="only-desk">悬停底栏彩点预览，移入卡片操作条自动滑出 · 右键灰点标已读 · 点右上角 <b>MR 3</b> 或按 <kbd>⌘K</kbd></span>
-            <span class="only-mob">轻点底栏彩点体验卡片 · 点右上角 <b>MR 3</b></span>
-          </div>
-
-          <div class="desk-win" id="deskWin">
+          <div class="macos-frame" id="macosFrame">
+            <div class="macos-menubar" aria-hidden="true">
+              <div class="mb-left">
+                <span class="mb-apple"></span>
+                <span class="mb-app">守夜人</span>
+              </div>
+              <div class="mb-right">
+                <span class="mb-wb-menu" title="macOS 状态栏兜底计数">
+                  <span class="watchman-icon" style="width:13px;height:13px;"></span>
+                  <span class="mb-wb-count" id="mbWbCount">1</span>
+                </span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+                <span>23:53</span>
+              </div>
+            </div>
+            <div class="macos-wallpaper">
+              <div class="desk-win" id="deskWin">
             <!-- Top Tab Bar + Real wb-mr-button -->
             <div class="desk-top">
               <div class="desk-lights" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -2467,6 +2549,8 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
                 <span>清单</span>
                 <span class="mono" style="font-size:10.5px;">⌘K</span>
               </button>
+            </div>
+          </div>
             </div>
           </div>
         </div>
@@ -2663,10 +2747,6 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
 
           <!-- 1:1 Interactive iPhone App Replica (Synced live with Desktop!) -->
           <div class="phone-wrap reveal">
-            <div class="demo-caption" style="margin-bottom:4px;">
-              <span class="only-desk">按住滑过左侧状态条 · 点卡片拉起底部抽屉 · 点左下角「经理」</span><span class="only-mob">滑动左侧状态条 · 点卡片抽屉 · 切 Agent 列表</span>
-            </div>
-
             <div class="iphone">
               <div class="iphone-screen" id="iosScreen">
                 <!-- Status Bar + Dynamic Island -->
@@ -2720,7 +2800,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
                   <!-- Real Floating Bottom-Left Manager Capsule -->
                   <button class="ios-mgr-pill" id="iosMgrPill" type="button">
                     <span style="position:relative;display:inline-flex;width:20px;height:20px;align-items:center;justify-content:center;color:var(--fg);">
-                      <span class="watchman-icon" style="width:20px;height:20px;"></span>
+                      <span class="watchman-icon wm-alive" style="width:20px;height:20px;"></span>
                       <span class="wb-dot-core" id="iosMgrDot" style="position:absolute;right:-2px;bottom:-2px;width:7px;height:7px;background:var(--fg3);border:1.2px solid var(--sheet);"></span>
                     </span>
                     <b>经理</b>
@@ -3089,6 +3169,12 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       function renderDesktopBar() {
         wbLogoMood.className = 'wb-logo-mood' + (store.managerStatus === 'thinking' ? ' thinking' : '');
         wbLogoBtn.classList.toggle('active', dActive === 'mgr' || wbMainModal.classList.contains('open'));
+        const mbCnt = document.getElementById('mbWbCount');
+        if (mbCnt) {
+          const youN = store.cases.filter((c) => c.g === 'you' && onBar(c)).length;
+          mbCnt.textContent = String(youN);
+          mbCnt.style.opacity = youN > 0 ? '1' : '0.35';
+        }
 
         const groups = ORDER.map((g) => store.cases.filter((c) => c.g === g && onBar(c))).filter((l) => l.length);
         wbBarDots.innerHTML = '';
@@ -4407,8 +4493,10 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
 
       const heroD2 = document.getElementById('heroD2Canvas');
       let hd2 = fitDprCanvas(heroD2);
+      const heroD2Wm = document.getElementById('heroD2Wm');
       const d2Particles = [];
-      let d2Clock = 0, d2WaveBump = 0;
+      const d2Ripples = [];
+      let d2Clock = 0, d2WaveBump = 0, d2Lean = 0;
 
       function tickHeroD2(now) {
         const { ctx, w, h } = hd2;
@@ -4416,6 +4504,25 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           ctx.clearRect(0, 0, w, h);
           const cx = w * 0.46, cy = h * 0.5;
           d2WaveBump *= 0.96;
+          d2Lean *= 0.9;
+          if (heroD2Wm) {
+            heroD2Wm.style.transform = `translate(calc(-50% + ${(d2Lean * -2.5).toFixed(2)}px), -50%) rotate(${(d2Lean * -4).toFixed(2)}deg)`;
+          }
+          // Soft ambient ripples radiating harmoniously from Watchman into background on catch
+          for (let ri = d2Ripples.length - 1; ri >= 0; ri--) {
+            const rp = d2Ripples[ri];
+            rp.r += 0.9;
+            rp.a *= 0.95;
+            if (rp.a < 0.015) { d2Ripples.splice(ri, 1); continue; }
+            ctx.save();
+            ctx.strokeStyle = rp.col;
+            ctx.globalAlpha = rp.a;
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.arc(cx, cy, rp.r, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+          }
 
           // Serene right Focus sine wave
           ctx.save();
@@ -4449,7 +4556,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
               const dist = Math.hypot(p.x - cx, p.y - cy);
               if (dist < (w < 460 ? 60 : 76) && p.kind !== 'you') {
                 if (p.kind === 'noise') { p.st = 'drop'; p.vx = -0.3; p.vy = 1.25; }
-                else { p.st = 'caught'; p.age = 0; }
+                else { p.st = 'caught'; p.age = 0; d2Lean = 1; d2Ripples.push({ r: 22, a: 0.34, col: col[p.kind] }); }
               } else if (p.kind === 'you' && p.x >= cx + 26) {
                 p.st = 'pass';
               }
@@ -4669,6 +4776,89 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       });
       requestAnimationFrame(tickHeroD2);
       requestAnimationFrame(tickSpecD5);
+
+      // ======================================================================
+      // 8. Natural Scroll-Triggered Auto-Choreography (Zero Instructions Needed!)
+      //    Yields immediately the moment the user hovers, clicks, or touches.
+      // ======================================================================
+      let deskUserTouched = false;
+      let deskChoreoTimers = [];
+      function stopDeskChoreo() {
+        deskUserTouched = true;
+        deskChoreoTimers.forEach(clearTimeout);
+        deskChoreoTimers = [];
+      }
+      deskWin.addEventListener('pointerdown', stopDeskChoreo, { passive: true });
+      wbBar.addEventListener('pointerenter', stopDeskChoreo, { passive: true });
+
+      const deskObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || deskUserTouched) return;
+          deskObserver.unobserve(entry.target);
+          // 1) Gently peek Yellow dot card + slide open its action bar harmoniously
+          deskChoreoTimers.push(setTimeout(() => {
+            if (deskUserTouched) return;
+            const c1Btn = wbBarDots.querySelector('[data-id="c1"]');
+            if (c1Btn) {
+              openDesktopPop('c1', c1Btn, false);
+              deskChoreoTimers.push(setTimeout(() => {
+                if (deskUserTouched || dActive !== 'c1') return;
+                dBarOpen = true;
+                wbPop.classList.add('bar-open');
+              }, 680));
+            }
+          }, 420));
+          // 2) Cross-slide smoothly to the Watchman Manager card so visitors notice it too
+          deskChoreoTimers.push(setTimeout(() => {
+            if (deskUserTouched) return;
+            openDesktopPop('mgr', wbLogoBtn, false);
+            deskChoreoTimers.push(setTimeout(() => {
+              if (deskUserTouched || dActive !== 'mgr') return;
+              dBarOpen = true;
+              wbPop.classList.add('bar-open');
+            }, 520));
+          }, 4600));
+          // 3) Return gently to rest on the Yellow dot card
+          deskChoreoTimers.push(setTimeout(() => {
+            if (deskUserTouched) return;
+            const c1Btn = wbBarDots.querySelector('[data-id="c1"]');
+            if (c1Btn) {
+              openDesktopPop('c1', c1Btn, false);
+              deskChoreoTimers.push(setTimeout(() => {
+                if (deskUserTouched || dActive !== 'c1') return;
+                dBarOpen = true;
+                wbPop.classList.add('bar-open');
+              }, 480));
+            }
+          }, 8400));
+        });
+      }, { threshold: 0.85 });
+      deskObserver.observe(document.getElementById('wbBar'));
+
+      // Subtle natural scroll preview on iPhone Piano-Key Rail (yields immediately on touch)
+      let iosUserTouched = false;
+      let iosChoreoTimers = [];
+      const iosScreenEl = document.getElementById('iosScreen');
+      function stopIosChoreo() {
+        iosUserTouched = true;
+        iosChoreoTimers.forEach(clearTimeout);
+        iosChoreoTimers = [];
+      }
+      iosScreenEl.addEventListener('pointerdown', stopIosChoreo, { passive: true });
+      const iosObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || iosUserTouched) return;
+          iosObserver.unobserve(entry.target);
+          ['you', 'work', 'all'].forEach((step, idx) => {
+            iosChoreoTimers.push(setTimeout(() => {
+              if (iosUserTouched) return;
+              iosRailSel = step;
+              renderIosHome();
+            }, 700 + idx * 1250));
+          });
+        });
+      }, { threshold: 0.48 });
+      iosObserver.observe(iosScreenEl);
 
       // Boot all live views!
       syncAllViews();
