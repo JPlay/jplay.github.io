@@ -23,6 +23,7 @@
       --fg3: #8f8f8f;
       --line: rgba(0, 0, 0, 0.065);
       --line-strong: rgba(0, 0, 0, 0.13);
+      --curtain: rgba(0, 0, 0, 0.032);
 
       --primary: #0d0d0d;
       --on-primary: #ffffff;
@@ -63,6 +64,7 @@
       --fg3: #8f8f8f;
       --line: rgba(255, 255, 255, 0.075);
       --line-strong: rgba(255, 255, 255, 0.15);
+      --curtain: rgba(255, 255, 255, 0.03);
 
       --primary: #ededed;
       --on-primary: #0d0d0d;
@@ -333,6 +335,172 @@
     }
     .hero-pill .mini-dots { display: inline-flex; gap: 5px; }
     .hero-pill .mini-dots span { width: 6.5px; height: 6.5px; border-radius: 50%; }
+
+    /* ==========================================================================
+       Hero D2 Sentinel (Active Custody + Focus Wave)
+       ========================================================================== */
+    .hero-sentinel {
+      position: relative;
+      max-width: 780px;
+      height: 176px;
+      margin: 26px auto 34px;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    }
+    .hero-sentinel canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .hero-sentinel-wm {
+      position: absolute;
+      left: 46%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .hero-sentinel-lbl {
+      position: absolute;
+      bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--fg3);
+      pointer-events: none;
+    }
+    .hero-sentinel-lbl.l { left: 10%; }
+    .hero-sentinel-lbl.r { right: 10%; }
+
+    /* ==========================================================================
+       Dedicated Attention Spectrum Section (D5 Interactive Pointer)
+       ========================================================================== */
+    .spec-card {
+      margin-top: 32px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      border-radius: 22px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .spec-stage {
+      position: relative;
+      width: 100%;
+      height: 330px;
+      background: radial-gradient(circle at 80% 50%, color-mix(in srgb, var(--you) 5%, transparent), transparent 55%), var(--bg-subtle);
+      overflow: hidden;
+      cursor: ew-resize;
+      touch-action: none;
+      user-select: none;
+    }
+    .spec-stage canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .spec-lbl {
+      position: absolute;
+      top: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--fg3);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .spec-lbl.l { left: 20px; }
+    .spec-lbl.r { right: 20px; }
+
+    .spec-handle {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 58px;
+      height: 58px;
+      border-radius: 17px;
+      background: var(--sheet);
+      border: 1.5px solid var(--fg);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: ew-resize;
+      z-index: 10;
+      touch-action: none;
+      transition: box-shadow 0.2s;
+    }
+    .spec-handle:hover {
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--fg) 10%, transparent), 0 14px 36px rgba(0, 0, 0, 0.28);
+    }
+    .spec-drag-hint {
+      position: absolute;
+      bottom: -24px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--fg3);
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .spec-drag-hint.faded { opacity: 0; }
+
+    .spec-pill {
+      position: absolute;
+      bottom: 16px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--sheet);
+      border: 1px solid var(--line-strong);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--fg2);
+      pointer-events: none;
+      z-index: 8;
+    }
+    .spec-pill.l { left: 20px; }
+    .spec-pill.r { right: 20px; color: var(--fg); font-weight: 500; }
+
+    .spec-foot {
+      padding: 15px 22px;
+      border-top: 1px solid var(--line);
+      background: var(--chrome);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--fg2);
+    }
+    .spec-presets {
+      display: inline-flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .spec-preset {
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--sheet);
+      font-size: 11.5px;
+      color: var(--fg2);
+      transition: all 0.16s;
+    }
+    .spec-preset:hover, .spec-preset.active {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
 
     .demo-caption {
       display: flex;
@@ -2044,7 +2212,20 @@
       .h2 { font-size: clamp(24px, 6.6vw, 30px); line-height: 1.26; }
       .sub { font-size: 14.5px; line-height: 1.65; }
       .hero { padding: 48px 0 68px; }
-      .hero-head { margin-bottom: 30px; }
+      .hero-head { margin-bottom: 18px; }
+      .hero-sentinel { height: 148px; margin: 16px auto 22px; }
+      .hero-sentinel-wm { width: 44px; height: 44px; border-radius: 12px; }
+      .hero-sentinel-lbl.l { left: 6%; }
+      .hero-sentinel-lbl.r { right: 6%; }
+      .spec-stage { height: 276px; }
+      .spec-handle { width: 48px; height: 48px; border-radius: 14px; }
+      .spec-lbl { font-size: 10px; top: 12px; }
+      .spec-lbl.l { left: 14px; }
+      .spec-lbl.r { right: 14px; }
+      .spec-pill { font-size: 10.5px; padding: 4px 10px; bottom: 12px; }
+      .spec-pill.l { left: 14px; }
+      .spec-pill.r { right: 14px; }
+      .spec-foot { padding: 12px 16px; font-size: 12.5px; }
       .hero-pill { font-size: 12px; padding: 5px 12px; margin-bottom: 18px; }
       .desk-tab:not(.active) { display: none; }
       .desk-lights { width: 52px; gap: 5px; }
@@ -2089,6 +2270,7 @@
 
       <nav class="nav-links" aria-label="导航">
         <a href="#desktop">桌面端</a>
+        <a href="#spectrum">注意力光谱</a>
         <a href="#flow">动态流程</a>
         <a href="#iphone">iPhone</a>
         <a href="#grammar">状态语法</a>
@@ -2126,6 +2308,16 @@
             <span class="only-desk">主体只留你正在深入思考的对话，所有自动化的事收进底栏一行彩点。</span>
             <span class="only-mob">主体只留深度对话，自动化收进底栏彩点。</span>
           </p>
+        </div>
+
+        <!-- Hero Living Emblem: D2 Active Custody + Calm Focus Wave -->
+        <div class="hero-sentinel reveal is-visible" aria-label="守夜人主动捕获外部任务，守护右侧深度心流">
+          <canvas id="heroD2Canvas"></canvas>
+          <div class="hero-sentinel-wm">
+            <span class="watchman-icon" style="width:28px;height:28px;"></span>
+          </div>
+          <span class="hero-sentinel-lbl l">外部任务</span>
+          <span class="hero-sentinel-lbl r">深度心流</span>
         </div>
 
         <div class="desk-wrap reveal is-visible">
@@ -2284,7 +2476,51 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
     <div class="divider"></div>
 
     <!-- ======================================================================
-         Section 2: Cinematic Animated Flow (Playable Visual Storytelling)
+         Section 2: Attention Spectrum (D5 Interactive Draggable Pointer)
+         ====================================================================== -->
+    <section id="spectrum">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">Attention Spectrum</div>
+          <h2 class="h2">
+            <span class="only-desk">把注意力指针，持续向右推。</span>
+            <span class="only-mob">把注意力指针，<br />持续向右推。</span>
+          </h2>
+          <p class="sub">
+            <span class="only-desk">左端交给守夜人自动闭环，右端留给只有你能做的深度创造。按住指针左右拖一拖。</span>
+            <span class="only-mob">左端交给守夜人，右端留给深度创造。左右拖一拖。</span>
+          </p>
+        </div>
+
+        <div class="spec-card reveal">
+          <div class="spec-stage" id="specStage">
+            <span class="spec-lbl l"><span class="only-desk">← 逻辑与 Agent 自治</span><span class="only-mob">← Agent 自治</span></span>
+            <span class="spec-lbl r"><span class="only-desk">深度思考与创造 →</span><span class="only-mob">深度创造 →</span></span>
+            <canvas id="specD5Canvas"></canvas>
+            <div class="spec-handle" id="specHandle" style="left:72%;" title="左右拖动守夜人指针">
+              <span class="watchman-icon" style="width:30px;height:30px;"></span>
+              <span class="spec-drag-hint" id="specDragHint">◂ 拖动指针 ▸</span>
+            </div>
+            <div class="spec-pill l" id="specPct">守夜人托管 · 72%</div>
+            <div class="spec-pill r" id="specThreads">注意力线程 · 3</div>
+          </div>
+
+          <div class="spec-foot">
+            <span id="specStatusNote">每多沉淀一条规则或技能，指针就往右推进一格。</span>
+            <div class="spec-presets">
+              <button class="spec-preset" data-preset="0.24" type="button">手动时期</button>
+              <button class="spec-preset" data-preset="0.54" type="button">引入守夜人</button>
+              <button class="spec-preset active" data-preset="0.78" type="button">稳定自治</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Section 3: Cinematic Animated Flow (Playable Visual Storytelling)
          ====================================================================== -->
     <section id="flow">
       <div class="container">
@@ -4154,6 +4390,285 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           wbListPop.classList.remove('open');
         }
       });
+
+      // ======================================================================
+      // 6. Hero D2 Sentinel Engine (Active Interception + Calm Focus Wave)
+      // ======================================================================
+      const cssToken = (v) => getComputedStyle(root).getPropertyValue(v).trim();
+      function fitDprCanvas(canvas) {
+        const r = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(r.width * dpr);
+        canvas.height = Math.round(r.height * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w: r.width, h: r.height };
+      }
+
+      const heroD2 = document.getElementById('heroD2Canvas');
+      let hd2 = fitDprCanvas(heroD2);
+      const d2Particles = [];
+      let d2Clock = 0, d2WaveBump = 0;
+
+      function tickHeroD2(now) {
+        const { ctx, w, h } = hd2;
+        if (w > 0 && h > 0) {
+          ctx.clearRect(0, 0, w, h);
+          const cx = w * 0.46, cy = h * 0.5;
+          d2WaveBump *= 0.96;
+
+          // Serene right Focus sine wave
+          ctx.save();
+          ctx.strokeStyle = cssToken('--line-strong');
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          const wx0 = w * 0.62, wx1 = w * 0.94;
+          for (let x = wx0; x <= wx1; x += 3) {
+            const u = (x - wx0) / (wx1 - wx0);
+            const env = Math.sin(u * Math.PI);
+            const amp = (3.5 + d2WaveBump * 11) * env;
+            const y = cy + Math.sin(u * 8 - now * 0.0024) * amp;
+            if (x === wx0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          ctx.restore();
+
+          if (++d2Clock % 24 === 0 && d2Particles.length < 22) {
+            const r = Math.random();
+            const kind = r < 0.50 ? 'noise' : r < 0.78 ? 'work' : r < 0.91 ? 'wait' : 'you';
+            d2Particles.push({ kind, x: w * 0.02, y: h * (0.2 + Math.random() * 0.6), vx: 1.15 + Math.random() * 0.45, st: 'in', ang: Math.random() * Math.PI * 2, age: 0 });
+          }
+
+          const col = { noise: cssToken('--done'), work: cssToken('--work'), wait: cssToken('--wait'), you: cssToken('--you') };
+          for (let i = d2Particles.length - 1; i >= 0; i--) {
+            const p = d2Particles[i];
+            let a = 1;
+            if (p.st === 'in') {
+              p.x += p.vx;
+              p.y += (cy - p.y) * 0.012;
+              const dist = Math.hypot(p.x - cx, p.y - cy);
+              if (dist < (w < 460 ? 60 : 76) && p.kind !== 'you') {
+                if (p.kind === 'noise') { p.st = 'drop'; p.vx = -0.3; p.vy = 1.25; }
+                else { p.st = 'caught'; p.age = 0; }
+              } else if (p.kind === 'you' && p.x >= cx + 26) {
+                p.st = 'pass';
+              }
+            } else if (p.st === 'drop') {
+              p.x += p.vx; p.y += p.vy; p.vy += 0.035;
+              a = Math.max(0, 1 - (p.y - cy) / (h * 0.48));
+            } else if (p.st === 'caught') {
+              p.age++;
+              p.ang += 0.026;
+              const orbR = w < 460 ? 38 : 46;
+              const tx = cx + Math.cos(p.ang) * orbR;
+              const ty = cy + Math.sin(p.ang) * (orbR * 0.84);
+              p.x += (tx - p.x) * 0.09;
+              p.y += (ty - p.y) * 0.09;
+              if (p.age < 130) {
+                ctx.save();
+                ctx.strokeStyle = col[p.kind];
+                ctx.globalAlpha = 0.42;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 3]);
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(p.x, p.y); ctx.stroke();
+                ctx.restore();
+              }
+              if (p.age > 130) a = Math.max(0, 1 - (p.age - 130) / 35);
+            } else if (p.st === 'pass') {
+              p.x += 0.95;
+              p.y += (cy - p.y) * 0.06;
+              if (Math.abs(p.x - w * 0.72) < 2) d2WaveBump = 1;
+              if (p.x > w * 0.88) a = Math.max(0, 1 - (p.x - w * 0.88) / (w * 0.1));
+            }
+
+            if (a <= 0.01 || p.y > h + 10) { d2Particles.splice(i, 1); continue; }
+            ctx.save();
+            ctx.globalAlpha = p.kind === 'noise' ? a * 0.45 : a;
+            ctx.fillStyle = col[p.kind];
+            const rad = p.kind === 'noise' ? 2.6 : p.kind === 'you' ? 4.8 : 4;
+            ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, Math.PI * 2); ctx.fill();
+            if (p.st === 'caught') {
+              ctx.strokeStyle = cssToken('--fg');
+              ctx.lineWidth = 1.2;
+              ctx.globalAlpha = a * 0.7;
+              ctx.beginPath(); ctx.arc(p.x, p.y, rad + 3.4, 0, Math.PI * 2); ctx.stroke();
+            }
+            ctx.restore();
+          }
+        }
+        requestAnimationFrame(tickHeroD2);
+      }
+
+      // ======================================================================
+      // 7. Dedicated Attention Spectrum Engine (D5 Draggable Pointer + Presets)
+      // ======================================================================
+      const specStage = document.getElementById('specStage');
+      const specCanvas = document.getElementById('specD5Canvas');
+      const specHandle = document.getElementById('specHandle');
+      const specDragHint = document.getElementById('specDragHint');
+      const specPct = document.getElementById('specPct');
+      const specThreads = document.getElementById('specThreads');
+      const specStatusNote = document.getElementById('specStatusNote');
+      const specPresetBtns = [...document.querySelectorAll('.spec-preset')];
+
+      let sd5 = fitDprCanvas(specCanvas);
+      const specTasks = [
+        { pos: 0.09, y: 0.30, label: '系统通知', r: 3.3 },
+        { pos: 0.14, y: 0.68, label: '群聊闲聊', r: 3.1 },
+        { pos: 0.20, y: 0.44, label: '常见问答', r: 3.7 },
+        { pos: 0.26, y: 0.73, label: '告警初诊', r: 3.9 },
+        { pos: 0.33, y: 0.28, label: '权限确认', r: 4.0 },
+        { pos: 0.39, y: 0.60, label: '常规排查', r: 4.3 },
+        { pos: 0.46, y: 0.36, label: '普通 MR',  r: 4.4 },
+        { pos: 0.53, y: 0.72, label: '回问补证', r: 4.2 },
+        { pos: 0.59, y: 0.28, label: '回归验证', r: 4.3 },
+        { pos: 0.66, y: 0.58, label: '灰度观察', r: 4.4 },
+        { pos: 0.72, y: 0.37, label: '跨端联调', r: 4.5 },
+        { pos: 0.80, y: 0.66, label: '核心 MR',  r: 4.9 },
+        { pos: 0.87, y: 0.36, label: '架构决策', r: 5.3 },
+        { pos: 0.92, y: 0.56, label: '产品方向', r: 5.3 }
+      ].map((t, i) => ({ ...t, phase: i * 1.19 }));
+
+      let specTarget = 0.78;
+      let specCurr = 0.78;
+      let specDragging = false;
+      let specUserMoved = false;
+
+      function setSpecTarget(val, byUser = true) {
+        specTarget = Math.max(0.14, Math.min(0.86, val));
+        if (byUser) {
+          specUserMoved = true;
+          specDragHint.classList.add('faded');
+        }
+        specPresetBtns.forEach((b) => b.classList.toggle('active', Math.abs(Number(b.dataset.preset) - specTarget) < 0.08));
+      }
+
+      function pointerToSpec(clientX) {
+        const r = specStage.getBoundingClientRect();
+        const pad = 22;
+        setSpecTarget((clientX - r.left - pad) / (r.width - pad * 2), true);
+      }
+
+      specStage.addEventListener('pointerdown', (e) => {
+        specDragging = true;
+        specStage.setPointerCapture?.(e.pointerId);
+        pointerToSpec(e.clientX);
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (specDragging) pointerToSpec(e.clientX);
+      });
+      window.addEventListener('pointerup', () => { specDragging = false; });
+
+      specPresetBtns.forEach((btn) => {
+        btn.addEventListener('click', () => setSpecTarget(Number(btn.dataset.preset), true));
+      });
+
+      function tickSpecD5(now) {
+        const { ctx, w, h } = sd5;
+        if (w > 0 && h > 0) {
+          const desired = specUserMoved ? specTarget : 0.62 + Math.sin(now * 0.00085) * 0.18;
+          specCurr += (desired - specCurr) * 0.12;
+
+          ctx.clearRect(0, 0, w, h);
+          const pad = 22;
+          const px = pad + (w - pad * 2) * specCurr;
+          const midY = h * 0.5;
+
+          // Automated curtain behind Watchman
+          ctx.save();
+          ctx.fillStyle = cssToken('--curtain');
+          ctx.fillRect(0, 0, px, h);
+
+          // Calibrated horizontal spectrum axis
+          ctx.strokeStyle = cssToken('--line-strong');
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(pad, midY); ctx.lineTo(w - pad, midY); ctx.stroke();
+
+          ctx.strokeStyle = cssToken('--line');
+          const ticks = w < 500 ? 16 : 24;
+          for (let i = 0; i <= ticks; i++) {
+            const tx = pad + ((w - pad * 2) * i) / ticks;
+            const th = i % 4 === 0 ? 8 : 4;
+            ctx.beginPath(); ctx.moveTo(tx, midY - th); ctx.lineTo(tx, midY + th); ctx.stroke();
+          }
+
+          // Vertical pointer beam
+          const grad = ctx.createLinearGradient(px, 24, px, h - 24);
+          grad.addColorStop(0, 'transparent');
+          grad.addColorStop(0.5, cssToken('--fg'));
+          grad.addColorStop(1, 'transparent');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.moveTo(px, 24); ctx.lineTo(px, h - 24); ctx.stroke();
+          ctx.restore();
+
+          let rightCount = 0;
+          specTasks.forEach((task) => {
+            const tx = pad + (w - pad * 2) * task.pos;
+            const auto = task.pos <= specCurr;
+            if (!auto) rightCount++;
+
+            const jitter = auto
+              ? Math.sin(now * 0.0014 + task.phase) * 3
+              : Math.sin(now * 0.0028 + task.phase) * 8;
+            const ty = h * task.y + jitter;
+
+            ctx.save();
+            if (auto) {
+              const col = task.pos < 0.24 ? cssToken('--done') : task.pos < 0.56 ? cssToken('--work') : cssToken('--wait');
+              ctx.globalAlpha = task.pos < 0.24 ? 0.45 : 0.86;
+              ctx.fillStyle = col;
+              ctx.beginPath(); ctx.arc(tx, ty, task.r, 0, Math.PI * 2); ctx.fill();
+
+              if (specCurr - task.pos < 0.14) {
+                ctx.strokeStyle = col;
+                ctx.globalAlpha = 0.28;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 3]);
+                ctx.beginPath(); ctx.moveTo(px, midY); ctx.lineTo(tx, ty); ctx.stroke();
+              }
+            } else {
+              ctx.fillStyle = cssToken('--you');
+              ctx.beginPath(); ctx.arc(tx, ty, task.r + 0.5, 0, Math.PI * 2); ctx.fill();
+              ctx.strokeStyle = cssToken('--you');
+              ctx.globalAlpha = 0.34 + Math.sin(now * 0.003 + task.phase) * 0.2;
+              ctx.lineWidth = 1.2;
+              ctx.beginPath(); ctx.arc(tx, ty, task.r + 5, 0, Math.PI * 2); ctx.stroke();
+
+              if (w > 460 && task.pos > 0.74) {
+                ctx.globalAlpha = 0.72;
+                ctx.fillStyle = cssToken('--fg2');
+                ctx.font = '10.5px -apple-system, "PingFang SC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(task.label, tx, ty + task.r + 15);
+              }
+            }
+            ctx.restore();
+          });
+
+          specHandle.style.left = `${px}px`;
+          const pct = Math.round(specCurr * 100);
+          specPct.textContent = w < 460 ? `托管 · ${pct}%` : `守夜人托管 · ${pct}%`;
+          specThreads.textContent = `注意力线程 · ${rightCount}`;
+          specThreads.style.color = rightCount <= 3 ? cssToken('--ok') : cssToken('--you');
+
+          if (rightCount <= 3) {
+            specStatusNote.textContent = '线程压回 3 个以内，右侧只留核心决策与深度创造。';
+          } else if (rightCount <= 7) {
+            specStatusNote.textContent = '常规排查与普通 MR 已开始自动闭环，继续向右推进指针。';
+          } else {
+            specStatusNote.textContent = '大量常规事务挤在右侧，人被迫沦为上下文路由器。';
+          }
+        }
+        requestAnimationFrame(tickSpecD5);
+      }
+
+      window.addEventListener('resize', () => {
+        hd2 = fitDprCanvas(heroD2);
+        sd5 = fitDprCanvas(specCanvas);
+      });
+      requestAnimationFrame(tickHeroD2);
+      requestAnimationFrame(tickSpecD5);
 
       // Boot all live views!
       syncAllViews();
