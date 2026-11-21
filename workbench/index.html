@@ -116,7 +116,7 @@
       padding: 0 24px;
     }
 
-    section { padding: 104px 0; }
+    section { padding: 84px 0; }
     .divider { height: 1px; background: var(--line); max-width: var(--max-w); margin: 0 auto; }
 
     /* Typography — Short, Crisp, Editorial */
@@ -538,11 +538,185 @@
     /* ==========================================================================
        Hero D2 Sentinel (Active Custody + Focus Wave)
        ========================================================================== */
+    /* Hero 1-line Category Anchor (1-second clarity, zero bloat) */
+    .hero-anchor {
+      margin-top: 18px;
+      text-wrap: balance;
+      font-size: clamp(14px, 1.45vw, 16px);
+      color: var(--fg2);
+      letter-spacing: 0.01em;
+      line-height: 1.6;
+      opacity: 0;
+      animation: fadeUpSoft 0.7s var(--ease) 1.05s forwards;
+    }
+    @keyframes fadeUpSoft {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Chapter 2: Pain — "You Are The Router" */
+    .pain-metrics {
+      margin-top: 38px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .pain-cell {
+      padding: 28px 24px;
+      border-right: 1px solid var(--line);
+    }
+    .pain-cell:first-child { padding-left: 0; }
+    .pain-cell:last-child { border-right: none; padding-right: 0; }
+    .pain-num {
+      font-size: clamp(28px, 3.2vw, 40px);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      color: var(--fg);
+      margin-bottom: 8px;
+    }
+    .pain-desc {
+      font-size: 13.5px;
+      color: var(--fg2);
+      line-height: 1.6;
+    }
+
+    .router-compare {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .rc-card {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .rc-card.after {
+      border-color: var(--line-strong);
+      box-shadow: var(--shadow-sm);
+    }
+    .rc-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--fg3);
+      font-family: var(--font-mono);
+    }
+    .rc-chain {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+    }
+    .rc-node {
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--fg2);
+      white-space: nowrap;
+    }
+    .rc-node.me-bad {
+      background: color-mix(in srgb, var(--bad) 12%, transparent);
+      color: var(--bad);
+      font-weight: 600;
+    }
+    .rc-node.wm-good {
+      background: var(--primary);
+      color: var(--on-primary);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .rc-node.focus-good {
+      background: var(--you-bg);
+      color: var(--fg);
+      border: 1px solid var(--you-border);
+      font-weight: 500;
+    }
+    .rc-arr { color: var(--fg3); font-size: 11px; }
+
+    /* Integrated Compact 6-Item Dot Legend Strip under Flow Cinema */
+    .flow-key-strip {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+    .fk-item {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 12px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .fk-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .fk-sub {
+      font-size: 11.5px;
+      color: var(--fg3);
+      line-height: 1.4;
+    }
+
+    /* Fact vs Inference Split Bar inside Desktop Card & iPhone Sheet (Principle 9) */
+    .fi-split-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10.5px;
+      color: var(--fg3);
+      padding-bottom: 4px;
+    }
+    .fi-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Live Cross-Device Relay Badge on iPhone Demo */
+    .ios-sync-pill {
+      position: absolute;
+      right: 14px;
+      top: 90px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--ok) 14%, var(--sheet));
+      border: 1px solid color-mix(in srgb, var(--ok) 35%, transparent);
+      color: var(--ok);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      z-index: 24;
+      opacity: 0;
+      transform: translateY(-4px);
+      pointer-events: none;
+      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+    .ios-sync-pill.show { opacity: 1; transform: translateY(0); }
+
     .hero-sentinel {
       position: relative;
       max-width: 780px;
-      height: 184px;
-      margin: 18px auto 34px;
+      height: 176px;
+      margin: 14px auto 6px;
+      overflow: hidden;
       -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
       mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
     }
@@ -2405,6 +2579,7 @@
       section { padding: 76px 0; }
       .ios-grid { grid-template-columns: 1fr; gap: 40px; }
       .grammar-strip { grid-template-columns: repeat(3, 1fr); }
+      .flow-key-strip { grid-template-columns: repeat(3, 1fr); }
       .craft-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
@@ -2413,7 +2588,7 @@
       .h1 { font-size: clamp(29px, 7.8vw, 35px); line-height: 1.2; }
       .poem-h1 { font-size: clamp(30px, 8.6vw, 40px); letter-spacing: 0.055em; line-height: 1.44; }
       .poem-seal { width: 17px; height: 17px; font-size: 7.5px; left: calc(100% + 4px); }
-      .h2 { font-size: clamp(24px, 6.6vw, 30px); line-height: 1.26; }
+      .h2 { font-size: clamp(22px, 6.0vw, 28px); line-height: 1.28; }
       .sub { font-size: 14.5px; line-height: 1.65; }
       .hero { padding: 48px 0 68px; }
       .hero-head { margin-bottom: 18px; }
@@ -2444,6 +2619,12 @@
       .desk-side { display: none; }
       .desk-stage { padding: 18px; }
       .grammar-strip { grid-template-columns: repeat(2, 1fr); }
+      .pain-metrics { grid-template-columns: 1fr; }
+      .pain-cell { border-right: none; border-bottom: 1px solid var(--line); padding: 20px 0; }
+      .pain-cell:last-child { border-bottom: none; }
+      .router-compare { grid-template-columns: 1fr; }
+      .flow-key-strip { grid-template-columns: repeat(2, 1fr); }
+      .hero-anchor { font-size: 13.5px; padding: 0 8px; }
       .story-tabs {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -2477,12 +2658,12 @@
       </a>
 
       <nav class="nav-links" aria-label="导航">
-        <a href="#desktop">桌面端</a>
+        <a href="#pain">痛点</a>
         <a href="#spectrum">注意力光谱</a>
-        <a href="#flow">动态流程</a>
+        <a href="#flow">工作流程</a>
+        <a href="#desktop">桌面端</a>
         <a href="#iphone">iPhone</a>
-        <a href="#grammar">状态语法</a>
-        <a href="#craft">透明度</a>
+        <a href="#craft">非黑盒</a>
       </nav>
 
       <button class="theme-btn" id="themeBtn" type="button" aria-label="切换浅色或深色">
@@ -2495,20 +2676,23 @@
   <main id="top">
 
     <!-- ======================================================================
-         Section 1: Hero + 1:1 Authentic Desktop Workbench
+         Chapter 1: Hero — Poetic Soul + 1-Second Category Anchor + Alive D2
          ====================================================================== -->
-    <section class="hero" id="desktop">
+    <section class="hero" style="padding: 74px 0 34px;">
       <div class="container">
-        <div class="hero-head reveal is-visible" style="margin-bottom: 6px;">
+        <div class="hero-head reveal is-visible" style="margin-bottom: 10px;">
           <div class="hero-poem-wrap">
             <h1 class="poem-h1" aria-label="千帆过尽守夜眼，只留三思在灯前。">
               <span class="poem-line"><span class="ink-ch" style="--d:0.08s">千</span><span class="ink-ch" style="--d:0.15s">帆</span><span class="ink-ch" style="--d:0.23s">过</span><span class="ink-ch" style="--d:0.30s">尽</span><span class="ink-ch" style="--d:0.38s">守</span><span class="ink-ch" style="--d:0.46s">夜</span><span class="ink-ch" style="--d:0.53s">眼</span><span class="ink-ch" style="--d:0.60s">，</span></span>
               <span class="poem-line"><span class="ink-ch" style="--d:0.86s">只</span><span class="ink-ch" style="--d:0.94s">留</span><span class="ink-ch" style="--d:1.02s">三</span><span class="ink-ch" style="--d:1.10s">思</span><span class="ink-ch" style="--d:1.18s">在</span><span class="ink-ch ink-lantern" style="--d:1.26s">灯</span><span class="ink-ch" style="--d:1.34s">前</span><span class="ink-ch" style="--d:1.42s">。</span><span class="poem-seal" aria-hidden="true"><span>守</span><span>夜</span></span></span>
             </h1>
           </div>
+          <p class="hero-anchor">
+            <span class="only-desk">一个替你值夜的 AI 经理：收消息、派 Agent、闭环，只在需要你的时候叫你。</span>
+            <span class="only-mob">替你值夜的 AI 经理，<br />收消息、派 Agent，只在需要时叫你。</span>
+          </p>
         </div>
 
-        <!-- Hero Living Emblem: D2 Active Custody + Calm Focus Wave -->
         <div class="hero-sentinel reveal is-visible" aria-label="守夜人主动捕获外部任务，守护右侧深度心流">
           <canvas id="heroD2Canvas"></canvas>
           <div class="hero-sentinel-wm" id="heroD2Wm">
@@ -2517,8 +2701,273 @@
           <span class="hero-sentinel-lbl l">外部任务</span>
           <span class="hero-sentinel-lbl r">深度心流</span>
         </div>
+      </div>
+    </section>
 
-        <div class="desk-wrap reveal is-visible">
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Chapter 2: Pain — "You Are The Router" (Real Data from consensus/00)
+         ====================================================================== -->
+    <section id="pain">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">01 · The Bottleneck</div>
+          <h2 class="h2">
+            <span class="only-desk">瓶颈不是算力，是你同时开着的注意力线程。</span>
+            <span class="only-mob">瓶颈不是算力，<br />是你同时开着的注意力线程。</span>
+          </h2>
+          <p class="sub">
+            <span class="only-desk">昂贵的从来不是读消息，而是当「人肉路由器」：复制上下文、开会话、盯进度、再转回结论。</span>
+            <span class="only-mob">耗尽精力的不是读消息，而是反复搬运上下文。</span>
+          </p>
+        </div>
+
+        <div class="pain-metrics reveal">
+          <div class="pain-cell">
+            <div class="pain-num">&gt; 3 条</div>
+            <div class="pain-desc">同时开着的注意力线程超过三个，深度思考就会断裂。</div>
+          </div>
+          <div class="pain-cell">
+            <div class="pain-num">48 / 141</div>
+            <div class="pain-desc">三周亲手开的 141 个 AI 会话里，48 个第一句话是在转发别人的消息。</div>
+          </div>
+          <div class="pain-cell">
+            <div class="pain-num">~80%</div>
+            <div class="pain-desc">涌进来的日常消息根本不需要你出手，却不断切碎心流。</div>
+          </div>
+        </div>
+
+        <div class="router-compare reveal">
+          <div class="rc-card">
+            <div class="rc-head"><span>BEFORE · 人肉路由器</span><span>高频打断</span></div>
+            <div class="rc-chain">
+              <span class="rc-node">外部消息</span><span class="rc-arr">→</span>
+              <span class="rc-node me-bad">你复制转发</span><span class="rc-arr">→</span>
+              <span class="rc-node">开 Agent</span><span class="rc-arr">→</span>
+              <span class="rc-node me-bad">你盯进度</span><span class="rc-arr">→</span>
+              <span class="rc-node me-bad">你转回结论</span>
+            </div>
+          </div>
+          <div class="rc-card after">
+            <div class="rc-head"><span>AFTER · 守夜人值守</span><span>只在卡点轻敲</span></div>
+            <div class="rc-chain">
+              <span class="rc-node">外部消息</span><span class="rc-arr">→</span>
+              <span class="rc-node wm-good"><span class="watchman-icon" style="width:14px;height:14px;"></span>守夜人分派闭环</span><span class="rc-arr">→</span>
+              <span class="rc-node focus-good">● 卡住才叫你</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Chapter 3: Attention Spectrum (Design Principle + Draggable Illustration)
+         ====================================================================== -->
+    <section id="spectrum">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">02 · Design Principle · 注意力光谱</div>
+          <h2 class="h2">
+            <span class="only-desk">把注意力指针，一点点往右推。</span>
+            <span class="only-mob">把注意力指针，<br />一点点往右推。</span>
+          </h2>
+          <p class="sub">
+            <span class="only-desk">这不是软件里的开关，而是我们演进系统的尺子：前期偏左，随着规则与记忆沉淀，把更多事交给守夜人。</span>
+            <span class="only-mob">这是演进系统的尺子，而非软件开关。拖一拖感受变化。</span>
+          </p>
+        </div>
+
+        <div class="spec-card reveal">
+          <div class="spec-stage" id="specStage">
+            <span class="spec-lbl l"><span class="only-desk">← 逻辑与 Agent 自治</span><span class="only-mob">← Agent 自治</span></span>
+            <span class="spec-lbl r"><span class="only-desk">深度思考与创造 →</span><span class="only-mob">深度创造 →</span></span>
+            <canvas id="specD5Canvas"></canvas>
+            <div class="spec-handle" id="specHandle" style="left:72%;" title="左右拖动感受指针右推">
+              <span class="watchman-icon" style="width:30px;height:30px;"></span>
+              <span class="spec-drag-hint" id="specDragHint">◂ 拖动感受右推 ▸</span>
+            </div>
+            <div class="spec-pill l" id="specPct">自治边界 · 72%</div>
+            <div class="spec-pill r" id="specThreads">注意力线程 · 3</div>
+          </div>
+
+          <div class="spec-foot">
+            <span id="specStatusNote">前期指针偏左，随规则与技能沉淀持续右推。</span>
+            <div class="spec-presets">
+              <button class="spec-preset" data-preset="0.24" type="button">前期偏左</button>
+              <button class="spec-preset" data-preset="0.54" type="button">引入守夜人</button>
+              <button class="spec-preset active" data-preset="0.78" type="button">持续右推</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Chapter 4: How One Thing Travels + Integrated 4-Color & ◎ Legend
+         ====================================================================== -->
+    <section id="flow">
+      <div class="container">
+        <div class="cinema-head reveal">
+          <div>
+            <div class="eyebrow">03 · How It Works</div>
+            <h2 class="h2">
+              <span class="only-desk">经理不干活，一件事一个专属小弟。</span>
+              <span class="only-mob">经理不干活，<br />一件事一个专属小弟。</span>
+            </h2>
+            <p class="sub">
+              <span class="only-desk">去掉多余中间层：门童挡噪音、经理派工代决、小弟在工程目录闭环，全局缩成底栏四色点。</span>
+              <span class="only-mob">门童挡噪音，经理派小弟闭环，全局缩成四色点。</span>
+            </p>
+          </div>
+
+          <div class="story-tabs" id="storyTabs" role="tablist">
+            <button class="story-tab active" data-scene="0" type="button">
+              <span class="wb-dot-core c-done" style="width:7px;height:7px;"></span>01 挡掉噪音
+            </button>
+            <button class="story-tab" data-scene="1" type="button">
+              <span class="wb-dot-core c-work" style="width:7px;height:7px;"></span>02 自动闭环
+            </button>
+            <button class="story-tab" data-scene="2" type="button">
+              <span class="wb-dot-core c-you" style="width:7px;height:7px;"></span>03 卡点等你
+            </button>
+            <button class="story-tab" data-scene="3" type="button">
+              <span class="wb-dot-core c-wait" style="width:7px;height:7px;"></span>04 离席推手机
+            </button>
+          </div>
+        </div>
+
+        <div class="cinema-card reveal">
+          <div class="cinema-stage" id="cinemaStage">
+            <!-- Dynamically Computed 1:1 Pixel SVG Tracks (Exact Node-Edge Anchoring on Desktop & Mobile) -->
+            <svg class="cinema-svg" id="cinemaSvg" aria-hidden="true">
+              <path id="fp-sig-gate" class="flow-track" d="" />
+              <path id="fp-gate-ign" class="flow-track" d="" />
+              <path id="fp-gate-mgr" class="flow-track" d="" />
+              <path id="fp-mgr-wrk" class="flow-track" d="" />
+              <path id="fp-wrk-snd" class="flow-track" d="" />
+              <path id="fp-wrk-bar" class="flow-track" d="" />
+              <path id="fp-ssh-ios" class="flow-track" d="" stroke-dasharray="5 5" />
+              <path id="fpa-1" class="flow-track-active" d="" />
+            </svg>
+
+            <!-- Moving Signal Packet -->
+            <div class="signal-orb" id="signalOrb">
+              <div class="signal-orb-tag" id="signalTag">群消息</div>
+            </div>
+
+            <!-- Stage Nodes (Positions updated responsively by JS for Desktop Landscape vs Mobile Portrait) -->
+            <div class="c-node" id="n-sig">
+              <div class="c-node-title">外部信号</div>
+              <div class="c-node-sub">IM · MR · 告警</div>
+            </div>
+
+            <div class="c-node" id="n-gate">
+              <div class="c-node-title">规则 + 门童</div>
+              <div class="c-node-sub">~80% 不用处理</div>
+            </div>
+
+            <div class="c-node" id="n-ign">
+              <div class="c-node-title">已忽略 · 可查</div>
+              <div class="c-node-sub">~80% 静默归档</div>
+            </div>
+
+            <div class="c-node" id="n-mgr">
+              <div class="c-node-title"><span class="watchman-icon" style="width:16px;height:16px;"></span>经理</div>
+              <div class="c-node-sub">只派活，不亲自干</div>
+            </div>
+
+            <div class="c-node" id="n-wrk">
+              <div class="c-node-title">小弟会话</div>
+              <div class="c-node-sub">每件事一个 Agent</div>
+            </div>
+
+            <div class="c-node" id="n-snd">
+              <div class="c-node-title">对外发送闸门</div>
+              <div class="c-node-sub">按规则发 · 越权拦</div>
+            </div>
+
+            <div class="c-node" id="n-ios">
+              <div class="c-node-title">iPhone 锁屏</div>
+              <div class="c-node-sub">SSH · 离席 10m 推</div>
+            </div>
+
+            <!-- Live Reacting Mini Bottom Bar inside Cinema -->
+            <div class="cinema-output-bar" id="cinemaBar">
+              <span style="font-size:11px;color:var(--fg3);">底栏</span>
+              <span class="wb-dot-box" id="cinemaDot">
+                <span class="wb-dot-ring"><span class="wb-dot-core c-done"></span></span>
+              </span>
+              <span id="cinemaBarText" style="font-size:12px;color:var(--fg);">安静，无新打扰</span>
+            </div>
+          </div>
+
+          <div class="cinema-footer">
+            <div class="cinema-story-line">
+              <span class="cinema-step-pill" id="cinemaStepPill">SCENE 01</span>
+              <span id="cinemaCaption">无关闲聊在门童处直接落入「可查」，主窗口与底栏纹丝不动。</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="cinema-progress"><div class="cinema-progress-fill" id="cinemaProg"></div></div>
+              <button class="wb-btn" id="cinemaReplay" type="button" style="height:26px;font-size:11.5px;">重播</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrated Compact 4-Color & ◎ Visual Key (strictly per consensus/03 §11) -->
+        <div class="flow-key-strip reveal" aria-label="底栏彩点语义">
+          <div class="fk-item">
+            <div class="fk-top"><span class="wb-dot-core c-you"></span><span>黄 · 等你</span></div>
+            <div class="fk-sub">交付、分诊或选择题</div>
+          </div>
+          <div class="fk-item">
+            <div class="fk-top"><span class="wb-dot-core c-work"></span><span>蓝 · 在做</span></div>
+            <div class="fk-sub">专属小弟后台推进中</div>
+          </div>
+          <div class="fk-item">
+            <div class="fk-top"><span class="wb-dot-core c-wait"></span><span>紫 · 等对方</span></div>
+            <div class="fk-sub">记等待时长，不擅催</div>
+          </div>
+          <div class="fk-item">
+            <div class="fk-top"><span class="wb-dot-core c-done"></span><span>灰 · 已结束</span></div>
+            <div class="fk-sub">看过或 48 小时后消失</div>
+          </div>
+          <div class="fk-item">
+            <div class="fk-top"><span class="wb-dot-ring ring-solid" style="width:14px;height:14px;"><span class="wb-dot-core c-work" style="width:8px;height:8px;"></span></span><span>◎ · 你接管</span></div>
+            <div class="fk-sub">走进会话亲自深聊</div>
+          </div>
+          <div class="fk-item">
+            <div class="fk-top"><span class="wb-dot-box" style="width:16px;height:16px;"><span class="wb-dot-core c-you"></span><span class="wb-dot-bub"></span></span><span>小气泡 · 新的等你</span></div>
+            <div class="fk-sub">看一眼就收，点仍是黄</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ======================================================================
+         Chapter 5: macOS Desktop Workbench (Primary Surface)
+         ====================================================================== -->
+    <section id="desktop">
+      <div class="container">
+        <div class="reveal" style="margin-bottom: 28px;">
+          <div class="eyebrow">04 · macOS · 主力工作台</div>
+          <h2 class="h2">
+            <span class="only-desk">深度对话占满屏幕，全局只占底栏余光。</span>
+            <span class="only-mob">深度对话占满屏幕，<br />全局只占底栏余光。</span>
+          </h2>
+          <p class="sub">
+            <span class="only-desk">只有卡住需要你时，底栏彩点与菜单栏数字才轻轻提醒。点开卡片可一句放行，也可随时走进小弟会话接管。</span>
+            <span class="only-mob">卡住才在底栏轻提醒；点开可一句放行，或随时接管会话。</span>
+          </p>
+        </div>
+
+        <div class="desk-wrap reveal">
           <div class="macos-frame" id="macosFrame">
             <div class="macos-menubar" aria-hidden="true">
               <div class="mb-left">
@@ -2687,169 +3136,17 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
     <div class="divider"></div>
 
     <!-- ======================================================================
-         Section 2: Attention Spectrum (D5 Interactive Draggable Pointer)
-         ====================================================================== -->
-    <section id="spectrum">
-      <div class="container">
-        <div class="reveal">
-          <div class="eyebrow">Attention Spectrum</div>
-          <h2 class="h2">
-            <span class="only-desk">把注意力指针，持续向右推。</span>
-            <span class="only-mob">把注意力指针，<br />持续向右推。</span>
-          </h2>
-          <p class="sub">
-            <span class="only-desk">左端交给守夜人自动闭环，右端留给只有你能做的深度创造。按住指针左右拖一拖。</span>
-            <span class="only-mob">左端交给守夜人，右端留给深度创造。左右拖一拖。</span>
-          </p>
-        </div>
-
-        <div class="spec-card reveal">
-          <div class="spec-stage" id="specStage">
-            <span class="spec-lbl l"><span class="only-desk">← 逻辑与 Agent 自治</span><span class="only-mob">← Agent 自治</span></span>
-            <span class="spec-lbl r"><span class="only-desk">深度思考与创造 →</span><span class="only-mob">深度创造 →</span></span>
-            <canvas id="specD5Canvas"></canvas>
-            <div class="spec-handle" id="specHandle" style="left:72%;" title="左右拖动守夜人指针">
-              <span class="watchman-icon" style="width:30px;height:30px;"></span>
-              <span class="spec-drag-hint" id="specDragHint">◂ 拖动指针 ▸</span>
-            </div>
-            <div class="spec-pill l" id="specPct">守夜人托管 · 72%</div>
-            <div class="spec-pill r" id="specThreads">注意力线程 · 3</div>
-          </div>
-
-          <div class="spec-foot">
-            <span id="specStatusNote">每多沉淀一条规则或技能，指针就往右推进一格。</span>
-            <div class="spec-presets">
-              <button class="spec-preset" data-preset="0.24" type="button">手动时期</button>
-              <button class="spec-preset" data-preset="0.54" type="button">引入守夜人</button>
-              <button class="spec-preset active" data-preset="0.78" type="button">稳定自治</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- ======================================================================
-         Section 3: Cinematic Animated Flow (Playable Visual Storytelling)
-         ====================================================================== -->
-    <section id="flow">
-      <div class="container">
-        <div class="cinema-head reveal">
-          <div>
-            <div class="eyebrow">How It Flows</div>
-            <h2 class="h2"><span class="only-desk">一条消息，如何安静走完一生。</span><span class="only-mob">一条消息的安静旅程。</span></h2>
-            <p class="sub"><span class="only-desk">不是死板框图，点开四个真实场景看系统怎么替你挡噪音、闭环、和接力。</span><span class="only-mob">切换四个场景，看系统挡噪音、闭环与接力。</span></p>
-          </div>
-
-          <div class="story-tabs" id="storyTabs" role="tablist">
-            <button class="story-tab active" data-scene="0" type="button">
-              <span class="wb-dot-core c-done" style="width:7px;height:7px;"></span>01 挡掉噪音
-            </button>
-            <button class="story-tab" data-scene="1" type="button">
-              <span class="wb-dot-core c-work" style="width:7px;height:7px;"></span>02 自动闭环
-            </button>
-            <button class="story-tab" data-scene="2" type="button">
-              <span class="wb-dot-core c-you" style="width:7px;height:7px;"></span>03 卡点等你
-            </button>
-            <button class="story-tab" data-scene="3" type="button">
-              <span class="wb-dot-core c-wait" style="width:7px;height:7px;"></span>04 离席推手机
-            </button>
-          </div>
-        </div>
-
-        <div class="cinema-card reveal">
-          <div class="cinema-stage" id="cinemaStage">
-            <!-- Dynamically Computed 1:1 Pixel SVG Tracks (Exact Node-Edge Anchoring on Desktop & Mobile) -->
-            <svg class="cinema-svg" id="cinemaSvg" aria-hidden="true">
-              <path id="fp-sig-gate" class="flow-track" d="" />
-              <path id="fp-gate-ign" class="flow-track" d="" />
-              <path id="fp-gate-mgr" class="flow-track" d="" />
-              <path id="fp-mgr-wrk" class="flow-track" d="" />
-              <path id="fp-wrk-snd" class="flow-track" d="" />
-              <path id="fp-wrk-bar" class="flow-track" d="" />
-              <path id="fp-ssh-ios" class="flow-track" d="" stroke-dasharray="5 5" />
-              <path id="fpa-1" class="flow-track-active" d="" />
-            </svg>
-
-            <!-- Moving Signal Packet -->
-            <div class="signal-orb" id="signalOrb">
-              <div class="signal-orb-tag" id="signalTag">群消息</div>
-            </div>
-
-            <!-- Stage Nodes (Positions updated responsively by JS for Desktop Landscape vs Mobile Portrait) -->
-            <div class="c-node" id="n-sig">
-              <div class="c-node-title">外部信号</div>
-              <div class="c-node-sub">IM · MR · 告警</div>
-            </div>
-
-            <div class="c-node" id="n-gate">
-              <div class="c-node-title">门童过滤</div>
-              <div class="c-node-sub">规则 + 轻量模型</div>
-            </div>
-
-            <div class="c-node" id="n-ign">
-              <div class="c-node-title">已忽略 · 可查</div>
-              <div class="c-node-sub">~80% 静默归档</div>
-            </div>
-
-            <div class="c-node" id="n-mgr">
-              <div class="c-node-title"><span class="watchman-icon" style="width:16px;height:16px;"></span>经理</div>
-              <div class="c-node-sub">归并 · 派工 · 代决</div>
-            </div>
-
-            <div class="c-node" id="n-wrk">
-              <div class="c-node-title">小弟会话</div>
-              <div class="c-node-sub">Claude / Codex</div>
-            </div>
-
-            <div class="c-node" id="n-snd">
-              <div class="c-node-title">受控发送口</div>
-              <div class="c-node-sub">wb send · 留痕</div>
-            </div>
-
-            <div class="c-node" id="n-ios">
-              <div class="c-node-title">iPhone 锁屏</div>
-              <div class="c-node-sub">SSH · 离席 10m 推</div>
-            </div>
-
-            <!-- Live Reacting Mini Bottom Bar inside Cinema -->
-            <div class="cinema-output-bar" id="cinemaBar">
-              <span style="font-size:11px;color:var(--fg3);">底栏</span>
-              <span class="wb-dot-box" id="cinemaDot">
-                <span class="wb-dot-ring"><span class="wb-dot-core c-done"></span></span>
-              </span>
-              <span id="cinemaBarText" style="font-size:12px;color:var(--fg);">安静，无新打扰</span>
-            </div>
-          </div>
-
-          <div class="cinema-footer">
-            <div class="cinema-story-line">
-              <span class="cinema-step-pill" id="cinemaStepPill">SCENE 01</span>
-              <span id="cinemaCaption">无关闲聊在门童处直接落入「可查」，主窗口与底栏纹丝不动。</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <div class="cinema-progress"><div class="cinema-progress-fill" id="cinemaProg"></div></div>
-              <button class="wb-btn" id="cinemaReplay" type="button" style="height:26px;font-size:11.5px;">重播</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- ======================================================================
-         Section 3: 1:1 Authentic Native iPhone Companion App
+         Chapter 6: iPhone Companion — Seamless Cross-Device Relay
          ====================================================================== -->
     <section id="iphone">
       <div class="container">
         <div class="ios-grid">
           <div class="reveal">
-            <div class="eyebrow">守夜人 for iPhone</div>
-            <h2 class="h2">离开电脑，<br />系统不停转。</h2>
+            <div class="eyebrow">05 · iPhone · 远程接力</div>
+            <h2 class="h2">离开电脑，<br />它照样在。</h2>
             <p class="sub">
-              基于原生 Swift 6 打造，与桌面端共享同一套守护进程和状态语法。
+              <span class="only-desk">桌面是主力，iPhone 是随时续上的遥控器。上面卡片刚改过的状态，这里实时同步。</span>
+              <span class="only-mob">桌面刚改过的状态实时同步。路上扫黄点、随时接管。</span>
             </p>
 
             <div class="spec-stack">
@@ -2872,7 +3169,6 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             </div>
           </div>
 
-          <!-- 1:1 Interactive iPhone App Replica (Synced live with Desktop!) -->
           <div class="phone-wrap reveal">
             <div class="iphone">
               <div class="iphone-screen" id="iosScreen">
@@ -2902,6 +3198,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
                   </div>
                 </div>
 
+                <div class="ios-sync-pill" id="iosSyncPill">● 已与桌面同步 · 88ms</div>
                 <!-- Real Corner Menu -->
                 <div class="ios-gear-menu" id="iosGearMenu">
                   <button class="ios-gear-item" type="button"><span>终端</span><span class="mono" style="color:var(--fg3);">›_</span></button>
@@ -2999,76 +3296,32 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
     <div class="divider"></div>
 
     <!-- ======================================================================
-         Section 4: Compact Visual Dot Grammar (6 Tiles, 1 Line Each)
-         ====================================================================== -->
-    <section id="grammar">
-      <div class="container">
-        <div class="reveal">
-          <div class="eyebrow">Visual Grammar</div>
-          <h2 class="h2"><span class="only-desk">颜色只回答一件事：球在谁手里。</span><span class="only-mob">颜色只回答一件事，<br />球在谁手里。</span></h2>
-        </div>
-
-        <div class="grammar-strip reveal">
-          <div class="g-tile">
-            <div class="g-icon"><span class="wb-dot-core c-you"></span></div>
-            <h3>黄 · 等你</h3>
-            <p>待你拍板或验收</p>
-          </div>
-          <div class="g-tile">
-            <div class="g-icon"><span class="wb-dot-core c-work"></span></div>
-            <h3>蓝 · 在做</h3>
-            <p>小弟后台静默执行</p>
-          </div>
-          <div class="g-tile">
-            <div class="g-icon"><span class="wb-dot-core c-wait"></span></div>
-            <h3>紫 · 等对方</h3>
-            <p>记等待时长，不擅催</p>
-          </div>
-          <div class="g-tile">
-            <div class="g-icon"><span class="wb-dot-core c-done"></span></div>
-            <h3>灰 · 未读</h3>
-            <p>已闭环，48h 后隐去</p>
-          </div>
-          <div class="g-tile">
-            <div class="g-icon">
-              <span class="wb-dot-ring ring-solid"><span class="wb-dot-core c-work"></span></span>
-            </div>
-            <h3>◎ · 已接管</h3>
-            <p>由你驱动，锁定外发</p>
-          </div>
-          <div class="g-tile">
-            <div class="g-icon">
-              <span class="wb-dot-box"><span class="wb-dot-core c-you"></span><span class="wb-dot-bub"></span></span>
-            </div>
-            <h3>红点 · 新待办</h3>
-            <p>看过即消，不弹横幅</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- ======================================================================
-         Section 5: Transparent Craft (Visual Artifacts Instead of Paragraphs)
+         Chapter 7: Transparent & Editable (Why Not a Black-Box Agent)
          ====================================================================== -->
     <section id="craft">
       <div class="container">
         <div class="reveal">
-          <div class="eyebrow">No Black Box</div>
-          <h2 class="h2"><span class="only-desk">每一笔动作可验，每一行规则可改。</span><span class="only-mob">每一笔动作可验，<br />每一行规则可改。</span></h2>
+          <div class="eyebrow">06 · No Black Box</div>
+          <h2 class="h2">
+            <span class="only-desk">不是黑盒，每一行规则与动作都属于你。</span>
+            <span class="only-mob">不是黑盒，<br />规则与动作全属于你。</span>
+          </h2>
+          <p class="sub">
+            <span class="only-desk">这是自己重写、不依赖黑盒代理的根本原因：看得懂它做了什么，想改规则立刻能改。</span>
+            <span class="only-mob">看得懂它做了什么，想改规则立刻能改。</span>
+          </p>
         </div>
 
         <div class="craft-grid reveal">
           <div class="craft-card">
             <div class="artifact-box">
-              <div class="a-row"><span class="a-ok">✓</span><span class="a-hi">已发生 · MR #418 已发评审评论</span></div>
-              <div class="a-row"><span class="a-ok">✓</span><span class="a-hi">已发生 · 已私聊通知发起人</span></div>
-              <div class="a-row"><span class="a-inf">≈</span><span class="a-inf">推断 · 峰值场景疑似提前限流</span></div>
+              <div class="a-row"><span class="a-ok">✓</span><span class="a-hi">已发生 · MR #418 已批准并私聊作者</span></div>
+              <div class="a-row"><span class="a-ok">✓</span><span class="a-hi">代决 · 已放行只读监控查询确认</span></div>
+              <div class="a-row"><span class="a-inf">≈</span><span class="a-inf">推断 · 峰值重试疑似与连接池上限相关</span></div>
             </div>
             <div>
-              <h3>事实与推断分离</h3>
-              <p>外发与审批作为事实落盘 SQLite，绝不和模型猜测混在一起。</p>
+              <h3>动作与推断严格分离</h3>
+              <p>所有外发与代决作为事实留痕可查，绝不与模型猜测混在一起。</p>
             </div>
           </div>
 
@@ -3092,7 +3345,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             </div>
             <div>
               <h3>规则全部在 Git 里</h3>
-              <p>没有云端黑盒提示词，改完规则即刻生效。</p>
+              <p>提示词与审批策略全是本地纯文本，改完即生效。</p>
             </div>
           </div>
         </div>
@@ -3106,8 +3359,14 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       <div class="closing-dots" aria-hidden="true">
         <span class="c-you"></span><span class="c-work"></span><span class="c-wait"></span><span class="c-done"></span>
       </div>
-      <h2 class="h2"><span class="only-desk">把注意力线程，压回三个以内。</span><span class="only-mob">把注意力线程，<br />压回三个以内。</span></h2>
-      <p class="sub"><span class="only-desk">守夜人 · Built on herdr-core for macOS &amp; Swift 6 iOS.</span><span class="only-mob">守夜人 · macOS &amp; Swift 6 iOS</span></p>
+      <h2 class="h2">
+        <span class="only-desk">把注意力线程，压回三个以内。</span>
+        <span class="only-mob">把注意力线程，<br />压回三个以内。</span>
+      </h2>
+      <p class="sub">
+        <span class="only-desk">守夜人 · Built on herdr-core for macOS &amp; Swift 6 iOS.</span>
+        <span class="only-mob">守夜人 · macOS &amp; Swift 6 iOS</span>
+      </p>
     </div>
   </main>
 
@@ -3164,48 +3423,48 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
         managerTalk: [
           { who: 'events', items: ['门童过滤 14 条系统通知', '已归并支付回调 2 条反馈并派工', '代决：放行只读指标查询确认'] },
           { who: 'note', text: '夜间整理 2026-11-20 · 更新 MEMORY.md（+2 条偏好），写入日记' },
-          { who: 'me', ref: 'API 限流阈值变更评审（!418）', caseId: 'c1', text: '核心服务 MR 结论先放我这边看一眼。', at: '14:02' },
-          { who: 'manager', text: '明白。小弟审完后我会直接点亮黄点交你终审，不自动批准。', at: '14:02' },
+          { who: 'me', ref: '生产只读库权限审批（core-api）', caseId: 'c1', text: '外部平台权限申请都交给我自己拍板。', at: '14:02' },
+          { who: 'manager', text: '明白。明白。GitLab 权限我按规则代决，外部权限一律点亮黄点交你定。', at: '14:02' },
           { who: 'me', text: '今天整体什么情况？', at: '16:50' },
-          { who: 'manager', text: '今天已过滤 29 条噪音，自动闭环 3 件常规排查。\n\n目前只有 **!418 限流变更评审** 卡在你这里拍板，其余都在安静推进。', at: '16:50' }
+          { who: 'manager', text: '今天已过滤 29 条噪音，自动闭环 3 件常规排查。\n\n目前只有 **core-api 生产只读权限审批** 等你拍板，其余都在安静推进。', at: '16:50' }
         ],
         cases: [
           {
-            id: 'c1', g: 'you', kind: '交付', owner: 'agent', pending: null, seen: false,
-            title: 'API 限流阈值变更评审（!418）',
-            src: '钉钉单聊', project: 'core-api', when: '16:48',
-            progress: '小弟已完成 14 个改动文件审查与单测核验，按策略交你终审。',
-            ask: '确认是否直接批准合并，还是补一条关于峰值突发流量降级的评审评论？',
+            id: 'c1', g: 'you', kind: '选择题', owner: 'agent', pending: null, seen: false,
+            title: '生产只读库权限审批（core-api）',
+            src: '单聊请求', project: 'core-api', when: '16:48',
+            progress: 'GitLab 仓库权限经理可按规则代决；外部数据库权限不在代决范围，交你拍板。',
+            ask: '同事申请开通 core-api 生产只读库权限用于排查慢查询，是否批准？',
             terminal: 't41',
-            termLog: '$ git diff main...HEAD --stat\n 14 files changed, 186 insertions(+), 42 deletions(-)\n$ pytest tests/test_ratelimit.py\n 28 passed in 1.42s\n[结论] 代码单测通过，建议确认突发流量下的 429 阈值。',
+            termLog: '$ 权限核验：申请范围 = core-api 只读副本（24h 临时）\n[策略校验] 非 GitLab 平台权限 → 停止自动审批，转「等你」拍板。',
             events: [
-              { kind: 'action', actor: 'agent', text: '小弟完成 14 个文件审查与单元测试验证', at: '16:42' },
-              { kind: 'inferred', actor: 'helper', text: '峰值突发场景下疑似可能提前触发 429 限流', at: '16:45' },
-              { kind: 'action', actor: 'agent', text: '已生成评论草稿，等你确认后经 wb send 发出', at: '16:48' }
+              { kind: 'action', actor: 'manager', text: '已核验申请范围：仅限 core-api 生产只读副本（24h）', at: '16:45' },
+              { kind: 'action', actor: 'manager', text: '按代决规则：GitLab 权限可代开，数据库权限不代决 → 交给你', at: '16:48' },
+              { kind: 'inferred', actor: 'helper', text: '用途与今天早些时候的慢查询工单一致', at: '16:48' }
             ]
           },
           {
             id: 'c2', g: 'work', kind: null, owner: 'agent', pending: null, seen: true,
             title: '支付回调超时根因排查',
-            src: '钉钉单聊', project: 'billing-svc', when: '16:35',
-            progress: '正在 billing-svc 比对近三次发布连接池指标与重试链路日志。',
+            src: '单聊反馈', project: 'billing-svc', when: '16:35',
+            progress: '小弟已复现超时并定位到重试队列阻塞，正在补单测，验证通过后经发送闸门回给提问人。',
             ask: null, terminal: 't52',
-            termLog: '$ grep -E "pool_exhausted|retry_depth" logs/prod.log | tail -n 3\n14:18:04 retry_depth=4 queue_wait=3120ms\n14:18:05 pool_exhausted active=64/64\n[分析中] 正在核对退避策略改动提交…',
+            termLog: '$ pytest tests/test_retry_backoff.py\n14:18:04 retry_depth=4 queue_wait=3120ms\n14:18:05 pool_exhausted active=64/64\n[修复中] 已加上退避上限，正在跑回归测试…',
             events: [
-              { kind: 'action', actor: 'manager', text: '归并 2 条反馈并派工至 billing-svc 会话', at: '16:28' },
+              { kind: 'action', actor: 'manager', text: '归并 2 条反馈并派给 billing-svc 专属小弟', at: '16:28' },
               { kind: 'action', actor: 'manager', text: '代决：放行只读监控查询工具确认', at: '16:31' },
-              { kind: 'inferred', actor: 'helper', text: '正在验证重试队列阻塞是否与连接池上限相关', at: '16:35' }
+              { kind: 'inferred', actor: 'helper', text: '超时疑似由连接池耗尽后重复入队触发', at: '16:35' }
             ]
           },
           {
             id: 'c3', g: 'work', kind: null, owner: 'me', pending: null, seen: true,
             title: '核心队列重构方案',
-            src: '主窗口', project: 'runtime-core', when: '15:50',
-            progress: '已由你在主窗口接管，系统停止自动外发，交还后无缝承接。',
+            src: '深度对话', project: 'runtime-core', when: '15:50',
+            progress: '你已走进该会话亲自深聊，对外发送闸门已锁定；聊完点「交还」经理无缝承接。',
             ask: null, terminal: 't18',
-            termLog: '$ cargo test queue::wal\nrunning 12 tests ... ok\n[已接管] 当前由你在主窗口直接驱动。',
+            termLog: '$ cargo test queue::wal\nrunning 12 tests ... ok\n[已接管] 当前由你在深度对话区直接驱动。',
             events: [
-              { kind: 'action', actor: 'user', text: '已在主窗口接管该终端，自动外发通道已锁定', at: '15:50' }
+              { kind: 'action', actor: 'user', text: '已接管该会话，自动外发通道锁定', at: '15:50' }
             ]
           },
           {
@@ -3213,28 +3472,29 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             waitingOn: '对方',
             title: '导出任务偶发白屏反馈',
             src: '群聊 @', project: 'web-editor', when: '等了 3 小时',
-            progress: '已在来源群礼貌回问复现素材编号，静默等待对方补充。',
+            progress: '小弟已在来源群礼貌回问复现素材编号，静默等待对方补充，绝不擅自催促。',
             ask: null, terminal: 't63',
-            termLog: '$ wb send dingtalk --case c4 --action group --text "方便发一下复现作品 ID 吗？"\n{"ok":true,"receipt":"msg_9821"}',
+            termLog: '[对外发送闸门] 校验归属通过 → 已在来源群回问复现素材 ID\n{"ok":true,"receipt":"msg_9821"}',
             events: [
-              { kind: 'action', actor: 'agent', text: '经受控发送口在来源群回问复现作品 ID', at: '13:45' }
+              { kind: 'action', actor: 'agent', text: '经对外发送闸门在来源群回问复现 ID', at: '13:45' }
             ]
           },
           {
             id: 'c5', g: 'done', kind: null, owner: 'agent', pending: null, seen: false,
-            title: '构建节点磁盘告警自动恢复',
-            src: '线上告警', project: 'build-runner', when: '15:10',
-            progress: '缓存清理完成，磁盘由 91% 降至 42%，已在告警群同步结案。',
+            title: '构建脚本 MR #418 自动评审',
+            src: 'MR 链接', project: 'build-tools', when: '15:10',
+            progress: '非核心仓全自动闭环：完成代码审查、自动批准，并已私聊通知作者。',
             ask: null, terminal: null,
             events: [
-              { kind: 'action', actor: 'agent', text: '核验节点磁盘占用由 91% 回落至 42%', at: '15:08' },
-              { kind: 'action', actor: 'agent', text: '已在告警群同步结案摘要并写入 FTS5 索引', at: '15:10' }
+              { kind: 'action', actor: 'agent', text: '完成 6 个改动文件审查与 CI 核验，已自动批准 MR #418', at: '15:08' },
+              { kind: 'action', actor: 'agent', text: '经对外发送闸门私聊作者同步结论', at: '15:10' },
+              { kind: 'inferred', actor: 'helper', text: '改动仅影响本地构建缓存，无线上回归风险', at: '15:09' }
             ]
           }
         ],
         doneHistory: [
-          { id: 'h1', title: '测试环境配置刷新延迟排查', progress: '已定位为监听重连退避配置过期，已同步修复 PR', time: '11:20' },
-          { id: 'h2', title: '前端打包脚本 MR 自动评审', progress: '非核心仓无风险，已自动批准并私聊通知作者', time: '10:05' }
+          { id: 'h1', title: '构建节点磁盘告警自动诊断', progress: '传感器触发 → 查明旧缓存堆积 → 已给出清理建议并确认恢复', time: '14:20' },
+          { id: 'h2', title: '测试环境配置刷新延迟排查', progress: '定位为重连退避配置过期，已提交修复并回给提问人', time: '11:05' }
         ]
       };
 
@@ -3281,6 +3541,15 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       let dCloseTimer = null;  // 240ms leave timer
       let dLastX = 16;
       let dListOpen = { dec: false, ign: false };
+
+      let syncPillTimer = null;
+      function pulseIosSync() {
+        const pill = document.getElementById('iosSyncPill');
+        if (!pill) return;
+        pill.classList.add('show');
+        clearTimeout(syncPillTimer);
+        syncPillTimer = setTimeout(() => pill.classList.remove('show'), 2800);
+      }
 
       function syncAllViews() {
         renderDesktopBar();
@@ -3485,6 +3754,10 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           ${c.progress ? `<div class="pop-prog">${c.progress}</div>` : ''}
           ${c.g === 'you' && c.ask ? `<div class="pop-ask"><span class="pop-ask-lbl">需要你</span><span>${c.ask}</span></div>` : ''}
           <div class="pop-thread">
+            <div class="fi-split-bar">
+              <span class="fi-tag"><span class="cr-mark ok" style="width:auto;">✓</span>已发生的动作</span>
+              <span class="fi-tag"><span class="cr-mark" style="width:auto;">≈</span>推断的状态</span>
+            </div>
             ${c.events.slice(-5).map((ev) => {
               if (ev.actor === 'user' && ev.kind === 'reply') {
                 return `<div class="cr-bubble-row me"><span class="cr-time">${ev.at}</span><div class="cr-bubble">${ev.text}</div></div>`;
@@ -3537,7 +3810,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
         if (inp) {
           inp.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.target.value.trim()) {
-              quickReplyCase(c, e.target.value.trim());
+              quickReplyCase(c, e.target.value.trim()); pulseIosSync();
               e.target.value = '';
             }
           });
@@ -3552,7 +3825,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
               setTimeout(() => { if (dArmedEnd === c.id) { dArmedEnd = null; if (dActive === c.id) renderDesktopPop(); } }, 3000);
             } else {
               dArmedEnd = null;
-              finishCase(c);
+              finishCase(c); pulseIosSync();
               closeDesktopPop();
             }
           });
@@ -3600,7 +3873,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           c.events.push({
             kind: 'action',
             actor: 'user',
-            text: type === 'take_over' ? '已接管，终端已露出到主体并锁定自动外发' : '已交还给经理，最新上下文自动承接',
+            text: type === 'take_over' ? '已接管，已进入深度对话区并锁定自动外发' : '已交还给经理，最新上下文自动承接',
             at: nowClock()
           });
           syncAllViews();
@@ -3826,25 +4099,25 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
         },
         {
           pill: 'SCENE 02 · 自动闭环',
-          caption: '故障反馈过门童后由经理派工小弟排查，经受控发送口回执，底栏蓝 → 紫 → 灰静默完成。',
+          caption: '故障反馈过门童后由经理派工小弟排查，经对外发送闸门回执，底栏蓝 → 紫 → 灰静默完成。',
           color: 'var(--work)',
           steps: [
             { t: 0,    at: 'n-sig',  tag: '单聊反馈：回调超时', lit: ['n-sig'],  path: '',         bar: 'done', barTxt: '收到新信号' },
             { t: 900,  at: 'n-gate', tag: '门童语义放行',       lit: ['n-gate'], path: 'sig-gate', bar: 'done', barTxt: '语义放行' },
             { t: 1700, at: 'n-mgr',  tag: '经理归并并派工',     lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work', barTxt: '蓝点亮起 · 小弟已接单' },
             { t: 2600, at: 'n-wrk',  tag: '小弟排查定位根因',   lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work', barTxt: '蓝点 · 工程目录排查中' },
-            { t: 3600, at: 'n-snd',  tag: 'wb send 校验并回执', lit: ['n-snd'],  path: 'wrk-snd',  bar: 'done', barTxt: '灰点 · 自动闭环，留痕可查' }
+            { t: 3600, at: 'n-snd',  tag: '发送闸门校验回执', lit: ['n-snd'],  path: 'wrk-snd',  bar: 'done', barTxt: '灰点 · 自动闭环，留痕可查' }
           ]
         },
         {
           pill: 'SCENE 03 · 卡点等你',
-          caption: '核心服务 MR 审完后按策略需你终审，底栏轻轻亮起带红点的黄点，回一句即继续闭环。',
+          caption: '超出代决范围的权限审批不会擅自放行，底栏轻亮黄点等你一句拍板，绝不弹窗打断。',
           color: 'var(--you)',
           steps: [
-            { t: 0,    at: 'n-sig',  tag: 'MR：core-api!418',   lit: ['n-sig'],  path: '',         bar: 'done',    barTxt: '收到 MR 评审请求' },
-            { t: 950,  at: 'n-mgr',  tag: '经理派给小弟审查',   lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work',    barTxt: '蓝点 · 代码审查中' },
-            { t: 1950, at: 'n-wrk',  tag: '单测通过，需你终审', lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work',    barTxt: '蓝点 · 产出评审结论' },
-            { t: 3100, at: 'bar',    tag: '点亮黄点 + 红气泡',  lit: [],         path: 'wrk-bar',  bar: 'you-bub', barTxt: '黄点等你 · 悬停一句话放行' }
+            { t: 0,    at: 'n-sig',  tag: '申请：生产只读权限',   lit: ['n-sig'],  path: '',         bar: 'done',    barTxt: '收到 MR 评审请求' },
+            { t: 950,  at: 'n-mgr',  tag: '经理核验范围与策略',   lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work',    barTxt: '蓝点 · 代码审查中' },
+            { t: 1950, at: 'n-wrk',  tag: '超出代决范围，需拍板', lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work',    barTxt: '蓝点 · 产出评审结论' },
+            { t: 3100, at: 'bar',    tag: '点亮黄点 + 小气泡',  lit: [],         path: 'wrk-bar',  bar: 'you-bub', barTxt: '黄点等你 · 悬停一句话放行' }
           ]
         },
         {
@@ -4048,10 +4321,10 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           ws: 'core-api', branch: 'feat/rate-limit-418', collapsed: false,
           agents: [
             {
-              id: 't41', kind: 'CX', kindName: 'Codex', title: 'API 限流阈值变更评审（!418）',
+              id: 't41', kind: 'CX', kindName: 'Codex', title: '生产只读库权限审批（core-api）',
               status: 'blocked', pinned: false, caseId: 'c1', add: 142, del: 28,
               chat: [
-                { who: 'agent', h: '审查结论', p: '14 个改动文件与 28 个单测全部通过。但在峰值突发场景下，新阈值疑似会提前触发 **429 限流**。', codeTitle: 'pytest · ratelimit', code: '28 passed in 1.42s\nWARN burst_cap=120 -> 80 req/s' }
+                { who: 'agent', h: '权限核验记录', p: '已核验申请范围仅限 **24 小时只读副本**。因属于外部数据库权限，已按审批策略暂停自动放行，等待你拍板。', codeTitle: 'policy · gate-check', code: 'scope=read_only_replica ttl=24h\npolicy=require_human_approval' }
               ]
             }
           ]
@@ -4191,7 +4464,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             </span>
             ${mine ? `<button class="ios-pill-btn" id="iosBannerBackBtn" type="button" style="height:26px;font-size:12px;">${c.pending === 'hand_back' ? '交还中…' : '交还'}</button>` : ''}`;
           document.getElementById('iosBannerBackBtn')?.addEventListener('click', () => {
-            triggerOwnership(c, 'hand_back');
+            triggerOwnership(c, 'hand_back'); pulseIosSync();
             flashIos('已交还给经理');
           });
         } else {
@@ -4476,7 +4749,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
               <div style="font-size:14.5px;font-weight:500;line-height:1.55;">${c.ask}</div>
             </div>` : ''}
           <div style="margin-top:20px;margin-bottom:8px;display:flex;justify-content:space-between;font-size:12.5px;color:var(--fg2);font-weight:600;">
-            <span>经过</span><span style="color:var(--fg3);font-weight:400;">${c.events.length} 条</span>
+            <span>经过 · ✓ 已发生 / ≈ 推断</span><span style="color:var(--fg3);font-weight:400;">${c.events.length} 条</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:10px;">
             ${c.events.map((ev) => {
@@ -4510,7 +4783,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             if (c.terminal && findIosAgent(c.terminal)) openIosAgentDetail(c.terminal);
           });
           document.getElementById('iosBackBtn').addEventListener('click', () => {
-            triggerOwnership(c, 'hand_back');
+            triggerOwnership(c, 'hand_back'); pulseIosSync();
             flashIos('已交还给经理');
           });
         } else {
@@ -4537,7 +4810,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           syncAllViews();
         });
         document.getElementById('iosTakeBtn')?.addEventListener('click', () => {
-          triggerOwnership(c, 'take_over');
+          triggerOwnership(c, 'take_over'); pulseIosSync();
           flashIos('已接管，会话在电脑上也打开了');
         });
         document.getElementById('iosEndBtn')?.addEventListener('click', () => {
@@ -4546,7 +4819,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             renderIosSheet();
             setTimeout(() => { if (iosArmedEnd) { iosArmedEnd = false; renderIosSheet(); } }, 3000);
           } else {
-            finishCase(c);
+            finishCase(c); pulseIosSync();
             closeIosSheet();
             flashIos('已结束');
           }
@@ -4590,7 +4863,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
         iosConfirmBox.classList.remove('open');
         const found = findIosAgent(iosActiveAgentId);
         const c = found?.agent.caseId ? store.cases.find((x) => x.id === found.agent.caseId) : null;
-        if (c) triggerOwnership(c, 'take_over');
+        if (c) triggerOwnership(c, 'take_over'); pulseIosSync();
         document.getElementById('iosAgentInp').value = '';
         if (text) commitAgentSend(text);
         flashIos('已接管并发送给小弟');
@@ -4800,7 +5073,12 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       function tickSpecD5(now) {
         const { ctx, w, h } = sd5;
         if (w > 0 && h > 0) {
-          const desired = specUserMoved ? specTarget : 0.62 + Math.sin(now * 0.00085) * 0.18;
+          let autoF;
+          const cyc = (now % 11000) / 11000;
+          if (cyc < 0.58) { const u = cyc / 0.58; autoF = 0.24 + (0.78 - 0.24) * (1 - Math.pow(1 - u, 3)); }
+          else if (cyc < 0.86) { autoF = 0.78; }
+          else { autoF = 0.78 - (0.78 - 0.24) * ((cyc - 0.86) / 0.14); }
+          const desired = specUserMoved ? specTarget : autoF;
           specCurr += (desired - specCurr) * 0.12;
 
           ctx.clearRect(0, 0, w, h);
