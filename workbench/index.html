@@ -127,6 +127,9 @@
       margin-bottom: 12px;
     }
 
+    .only-mob { display: none; }
+    .only-desk { display: inline; }
+    .h1, .h2 { text-wrap: balance; }
     .h1 {
       font-size: clamp(36px, 5.2vw, 60px);
       font-weight: 650;
@@ -401,6 +404,9 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       transition: background 0.15s, color 0.15s;
     }
     .desk-tab:hover { background: var(--surface); color: var(--fg2); }
@@ -2032,6 +2038,20 @@
       .craft-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
+      .only-mob { display: inline; }
+      .only-desk { display: none; }
+      .h1 { font-size: clamp(29px, 7.8vw, 35px); line-height: 1.2; }
+      .h2 { font-size: clamp(24px, 6.6vw, 30px); line-height: 1.26; }
+      .sub { font-size: 14.5px; line-height: 1.65; }
+      .hero { padding: 48px 0 68px; }
+      .hero-head { margin-bottom: 30px; }
+      .hero-pill { font-size: 12px; padding: 5px 12px; margin-bottom: 18px; }
+      .desk-tab:not(.active) { display: none; }
+      .desk-lights { width: 52px; gap: 5px; }
+      .desk-lights span { width: 9px; height: 9px; }
+      .spec-row { grid-template-columns: 82px 1fr; gap: 12px; padding: 15px 0; }
+      .spec-k { font-size: 12px; }
+      .spec-v { font-size: 13.5px; line-height: 1.6; }
       .nav-links { display: none; }
       .desk-side { display: none; }
       .desk-stage { padding: 18px; }
@@ -2094,26 +2114,24 @@
             <span class="mini-dots" aria-hidden="true">
               <span class="c-you"></span><span class="c-work"></span><span class="c-wait"></span><span class="c-done"></span>
             </span>
-            <span>守夜人 · macOS &amp; iPhone 个人 Agent 任务工作台</span>
+            <span class="only-desk">守夜人 · macOS &amp; iPhone 个人 Agent 任务工作台</span><span class="only-mob">macOS &amp; iPhone · Agent 任务工作台</span>
           </div>
 
           <h1 class="h1">
-            让系统在余光里安静运转，<br />
-            把注意力留给深度思考。
+            <span class="only-desk">让系统在余光里安静运转，<br />把注意力留给深度思考。</span>
+            <span class="only-mob">系统在余光里运转，<br />把专注留给思考。</span>
           </h1>
 
           <p class="sub">
-            主体只留你正在深入思考的对话，所有自动化的事收进底栏一行彩点。
+            <span class="only-desk">主体只留你正在深入思考的对话，所有自动化的事收进底栏一行彩点。</span>
+            <span class="only-mob">主体只留深度对话，自动化收进底栏彩点。</span>
           </p>
         </div>
 
         <div class="desk-wrap reveal is-visible">
           <div class="demo-caption">
-            <span>悬停底栏彩点预览，移入卡片操作条自动滑出</span>
-            <span>·</span>
-            <span>右键灰点标已读</span>
-            <span>·</span>
-            <span>点右上角 <b>MR 3</b> 或按 <kbd>⌘K</kbd></span>
+            <span class="only-desk">悬停底栏彩点预览，移入卡片操作条自动滑出 · 右键灰点标已读 · 点右上角 <b>MR 3</b> 或按 <kbd>⌘K</kbd></span>
+            <span class="only-mob">轻点底栏彩点体验卡片 · 点右上角 <b>MR 3</b></span>
           </div>
 
           <div class="desk-win" id="deskWin">
@@ -2273,8 +2291,8 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
         <div class="cinema-head reveal">
           <div>
             <div class="eyebrow">How It Flows</div>
-            <h2 class="h2">一条消息，如何安静走完一生。</h2>
-            <p class="sub">不是死板框图，点开四个真实场景看系统怎么替你挡噪音、闭环、和接力。</p>
+            <h2 class="h2"><span class="only-desk">一条消息，如何安静走完一生。</span><span class="only-mob">一条消息的安静旅程。</span></h2>
+            <p class="sub"><span class="only-desk">不是死板框图，点开四个真实场景看系统怎么替你挡噪音、闭环、和接力。</span><span class="only-mob">切换四个场景，看系统挡噪音、闭环与接力。</span></p>
           </div>
 
           <div class="story-tabs" id="storyTabs" role="tablist">
@@ -2394,15 +2412,15 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
               </div>
               <div class="spec-row">
                 <div class="spec-k">原地接管</div>
-                <div class="spec-v">先旁观小弟进展；需要介入时<b>发消息即确认接管</b>，也可一键打开 <span class="mono">libghostty</span> 终端。</div>
+                <div class="spec-v">先旁观进展；需要介入时<b>发消息即接管</b>，一键切换原生终端。</div>
               </div>
               <div class="spec-row">
                 <div class="spec-k">SSH · 90ms</div>
-                <div class="spec-v">直连本机 Unix Socket，无需公网暴露服务；回前台增量同步，<b>发话 &lt; 0.4s</b>。</div>
+                <div class="spec-v">直连本机 Socket，不暴露公网；回前台增量同步，<b>发话 &lt; 0.4s</b>。</div>
               </div>
               <div class="spec-row">
                 <div class="spec-k">离席感知</div>
-                <div class="spec-v">人在桌前手机不响；<b>macOS 键鼠静默 10 分钟</b>才汇总推锁屏，桌面看过自动消角标。</div>
+                <div class="spec-v">人在桌前不打扰；<b>离席 10 分钟</b>才汇总推锁屏，桌面看过自动消角标。</div>
               </div>
             </div>
           </div>
@@ -2410,7 +2428,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           <!-- 1:1 Interactive iPhone App Replica (Synced live with Desktop!) -->
           <div class="phone-wrap reveal">
             <div class="demo-caption" style="margin-bottom:4px;">
-              <span>按住滑过左侧状态条 · 点卡片拉起底部抽屉 · 点左下角「经理」</span>
+              <span class="only-desk">按住滑过左侧状态条 · 点卡片拉起底部抽屉 · 点左下角「经理」</span><span class="only-mob">滑动左侧状态条 · 点卡片抽屉 · 切 Agent 列表</span>
             </div>
 
             <div class="iphone">
@@ -2544,43 +2562,43 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       <div class="container">
         <div class="reveal">
           <div class="eyebrow">Visual Grammar</div>
-          <h2 class="h2">颜色只回答一件事：球在谁手里。</h2>
+          <h2 class="h2"><span class="only-desk">颜色只回答一件事：球在谁手里。</span><span class="only-mob">颜色只回答一件事，<br />球在谁手里。</span></h2>
         </div>
 
         <div class="grammar-strip reveal">
           <div class="g-tile">
             <div class="g-icon"><span class="wb-dot-core c-you"></span></div>
             <h3>黄 · 等你</h3>
-            <p>需要拍板、验收或选择题</p>
+            <p>待你拍板或验收</p>
           </div>
           <div class="g-tile">
             <div class="g-icon"><span class="wb-dot-core c-work"></span></div>
             <h3>蓝 · 在做</h3>
-            <p>小弟在工程目录静默干活</p>
+            <p>小弟后台静默执行</p>
           </div>
           <div class="g-tile">
             <div class="g-icon"><span class="wb-dot-core c-wait"></span></div>
             <h3>紫 · 等对方</h3>
-            <p>记等待时长，绝不擅自催</p>
+            <p>记等待时长，不擅催</p>
           </div>
           <div class="g-tile">
             <div class="g-icon"><span class="wb-dot-core c-done"></span></div>
             <h3>灰 · 未读</h3>
-            <p>自动闭环，已读或 48h 消</p>
+            <p>已闭环，48h 后隐去</p>
           </div>
           <div class="g-tile">
             <div class="g-icon">
               <span class="wb-dot-ring ring-solid"><span class="wb-dot-core c-work"></span></span>
             </div>
             <h3>◎ · 已接管</h3>
-            <p>交由你亲手驱动，锁外发</p>
+            <p>由你驱动，锁定外发</p>
           </div>
           <div class="g-tile">
             <div class="g-icon">
               <span class="wb-dot-box"><span class="wb-dot-core c-you"></span><span class="wb-dot-bub"></span></span>
             </div>
             <h3>红点 · 新待办</h3>
-            <p>悬停 0.6 秒即消，不弹横幅</p>
+            <p>看过即消，不弹横幅</p>
           </div>
         </div>
       </div>
@@ -2595,7 +2613,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       <div class="container">
         <div class="reveal">
           <div class="eyebrow">No Black Box</div>
-          <h2 class="h2">每一笔动作可验，每一行规则可改。</h2>
+          <h2 class="h2"><span class="only-desk">每一笔动作可验，每一行规则可改。</span><span class="only-mob">每一笔动作可验，<br />每一行规则可改。</span></h2>
         </div>
 
         <div class="craft-grid reveal">
@@ -2619,7 +2637,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             </div>
             <div>
               <h3>三层记忆与夜间复盘</h3>
-              <p>越用越懂你的工作习惯，沉淀为可追溯的日记与建议。</p>
+              <p>越用越懂你的习惯，沉淀为可追溯日记与建议。</p>
             </div>
           </div>
 
@@ -2631,7 +2649,7 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
             </div>
             <div>
               <h3>规则全部在 Git 里</h3>
-              <p>没有关在云端黑盒里的提示词，想改规则改完即生效。</p>
+              <p>没有云端黑盒提示词，改完规则即刻生效。</p>
             </div>
           </div>
         </div>
@@ -2645,8 +2663,8 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       <div class="closing-dots" aria-hidden="true">
         <span class="c-you"></span><span class="c-work"></span><span class="c-wait"></span><span class="c-done"></span>
       </div>
-      <h2 class="h2">把注意力线程，压回三个以内。</h2>
-      <p class="sub">守夜人 · Built on herdr-core for macOS &amp; Swift 6 iOS.</p>
+      <h2 class="h2"><span class="only-desk">把注意力线程，压回三个以内。</span><span class="only-mob">把注意力线程，<br />压回三个以内。</span></h2>
+      <p class="sub"><span class="only-desk">守夜人 · Built on herdr-core for macOS &amp; Swift 6 iOS.</span><span class="only-mob">守夜人 · macOS &amp; Swift 6 iOS</span></p>
     </div>
   </main>
 
@@ -3265,8 +3283,8 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
         'n-ios':  { x: 86.0, y: 63.0 }
       };
       const MOB_POS = {
-        'n-sig':  { x: 50.0, y: 11.0 },
-        'n-gate': { x: 50.0, y: 27.0 },
+        'n-sig':  { x: 50.0, y: 13.5 },
+        'n-gate': { x: 50.0, y: 29.0 },
         'n-ign':  { x: 24.5, y: 45.0 },
         'n-mgr':  { x: 74.5, y: 45.0 },
         'n-wrk':  { x: 74.5, y: 62.5 },
