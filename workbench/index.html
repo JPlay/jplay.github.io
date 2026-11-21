@@ -1000,8 +1000,6 @@
       background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--surface) 60%, transparent), transparent 72%);
       overflow: hidden;
     }
-    .cinema-svg-mobile { display: none; }
-    .cinema-svg-desktop { display: block; }
     .signal-orb-tag.align-left { left: -6px; transform: translateX(0); }
     .signal-orb-tag.align-right { left: auto; right: -6px; transform: translateX(0); }
 
@@ -1070,8 +1068,8 @@
     /* Live Moving Signal Packet */
     .signal-orb {
       position: absolute;
-      width: 14px;
-      height: 14px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
@@ -1083,7 +1081,7 @@
     .signal-orb-tag {
       position: absolute;
       left: 50%;
-      bottom: 20px;
+      bottom: 18px;
       transform: translateX(-50%);
       white-space: nowrap;
       font-size: 11px;
@@ -2046,13 +2044,13 @@
       }
       .story-tab { justify-content: center; padding: 7px 10px; font-size: 12px; }
       .cinema-stage { height: 530px; }
-      .cinema-svg-desktop { display: none; }
-      .cinema-svg-mobile { display: block; }
       .c-node { min-width: 112px; padding: 8px 11px; border-radius: 12px; }
       .c-node-title { font-size: 12px; }
       .c-node-sub { font-size: 10px; }
       .cinema-output-bar { bottom: 14px; font-size: 11.5px; padding: 0 12px; max-width: calc(100% - 24px); }
-      .cinema-footer { padding: 14px 16px; }
+      .cinema-footer { padding: 14px 16px; flex-direction: column; align-items: stretch; gap: 12px; }
+      .cinema-footer > div:last-child { width: 100%; justify-content: space-between; }
+      .cinema-progress { flex: 1; width: auto; }
       .cinema-story-line { flex-direction: column; align-items: flex-start; gap: 6px; }
     }
   </style>
@@ -2297,44 +2295,16 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
 
         <div class="cinema-card reveal">
           <div class="cinema-stage" id="cinemaStage">
-            <!-- Desktop Landscape SVG Tracks (viewBox 1000x450 — routes NEVER cross unrelated nodes) -->
-            <svg class="cinema-svg cinema-svg-desktop" viewBox="0 0 1000 450" preserveAspectRatio="none" aria-hidden="true">
-              <!-- Signal (100,198) -> Gate (265,198) -->
-              <path id="dp-sig-gate" class="flow-track" d="M 155 198 L 210 198" />
-              <!-- Gate (265,198) -> Ignored (265,335) -->
-              <path id="dp-gate-ign" class="flow-track" d="M 265 224 L 265 308" />
-              <!-- Gate (265,198) -> Manager (455,112) -->
-              <path id="dp-gate-mgr" class="flow-track" d="M 320 184 C 365 162, 365 112, 392 112" />
-              <!-- Manager (455,112) -> Worker (655,112) -->
-              <path id="dp-mgr-wrk" class="flow-track" d="M 518 112 L 598 112" />
-              <!-- Worker (655,112) -> wb send (855,112) -->
-              <path id="dp-wrk-snd" class="flow-track" d="M 712 112 L 792 112" />
-              <!-- Worker (655,112) -> Bottom Bar (500,398) curving cleanly through center gap -->
-              <path id="dp-wrk-bar" class="flow-track" d="M 655 138 C 655 268, 560 325, 500 378" />
-              <!-- Bottom Bar (500,398) -> iPhone (855,288) sweeping cleanly below without crossing any box -->
-              <path id="dp-ssh-ios" class="flow-track" d="M 615 398 C 755 398, 855 372, 855 316" stroke-dasharray="5 5" />
-
-              <path id="dpa-1" class="flow-track-active" d="" />
-            </svg>
-
-            <!-- Mobile Portrait Vertical SVG Tracks (viewBox 360x530 — clean top-to-bottom lanes) -->
-            <svg class="cinema-svg cinema-svg-mobile" viewBox="0 0 360 530" preserveAspectRatio="none" aria-hidden="true">
-              <!-- Signal (180,52) -> Gate (180,140) -->
-              <path id="mp-sig-gate" class="flow-track" d="M 180 76 L 180 116" />
-              <!-- Gate (180,140) -> Ignored (88,236) -->
-              <path id="mp-gate-ign" class="flow-track" d="M 148 164 C 118 182, 88 190, 88 212" />
-              <!-- Gate (180,140) -> Manager (268,236) -->
-              <path id="mp-gate-mgr" class="flow-track" d="M 212 164 C 242 182, 268 190, 268 212" />
-              <!-- Manager (268,236) -> Worker (268,328) -->
-              <path id="mp-mgr-wrk" class="flow-track" d="M 268 260 L 268 304" />
-              <!-- Worker (268,328) -> wb send (268,416) -->
-              <path id="mp-wrk-snd" class="flow-track" d="M 268 352 L 268 392" />
-              <!-- Worker (268,328) -> Bottom Bar (180,492) curving cleanly down center -->
-              <path id="mp-wrk-bar" class="flow-track" d="M 215 344 C 175 362, 180 416, 180 472" />
-              <!-- Bottom Bar (180,492) -> iPhone (88,374) sweeping left cleanly -->
-              <path id="mp-ssh-ios" class="flow-track" d="M 122 480 C 90 468, 88 436, 88 398" stroke-dasharray="5 5" />
-
-              <path id="mpa-1" class="flow-track-active" d="" />
+            <!-- Dynamically Computed 1:1 Pixel SVG Tracks (Exact Node-Edge Anchoring on Desktop & Mobile) -->
+            <svg class="cinema-svg" id="cinemaSvg" aria-hidden="true">
+              <path id="fp-sig-gate" class="flow-track" d="" />
+              <path id="fp-gate-ign" class="flow-track" d="" />
+              <path id="fp-gate-mgr" class="flow-track" d="" />
+              <path id="fp-mgr-wrk" class="flow-track" d="" />
+              <path id="fp-wrk-snd" class="flow-track" d="" />
+              <path id="fp-wrk-bar" class="flow-track" d="" />
+              <path id="fp-ssh-ios" class="flow-track" d="" stroke-dasharray="5 5" />
+              <path id="fpa-1" class="flow-track-active" d="" />
             </svg>
 
             <!-- Moving Signal Packet -->
@@ -3286,36 +3256,94 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       // 4. Cinematic Animated Story-Flow Engine (4 Playable Real Scenarios)
       // ======================================================================
       const DESK_POS = {
-        'n-sig':  { x: 10.0, y: 44.0 },
-        'n-gate': { x: 26.5, y: 44.0 },
-        'n-ign':  { x: 26.5, y: 74.4 },
-        'n-mgr':  { x: 45.5, y: 24.9 },
-        'n-wrk':  { x: 65.5, y: 24.9 },
-        'n-snd':  { x: 85.5, y: 24.9 },
-        'n-ios':  { x: 85.5, y: 64.0 },
-        'bar':    { x: 50.0, y: 88.4 }
+        'n-sig':  { x: 10.5, y: 45.0 },
+        'n-gate': { x: 27.5, y: 45.0 },
+        'n-ign':  { x: 27.5, y: 74.5 },
+        'n-mgr':  { x: 47.0, y: 25.0 },
+        'n-wrk':  { x: 66.5, y: 25.0 },
+        'n-snd':  { x: 86.0, y: 25.0 },
+        'n-ios':  { x: 86.0, y: 63.0 }
       };
       const MOB_POS = {
-        'n-sig':  { x: 50.0, y: 9.8 },
-        'n-gate': { x: 50.0, y: 26.4 },
-        'n-ign':  { x: 24.4, y: 44.5 },
-        'n-mgr':  { x: 74.4, y: 44.5 },
-        'n-wrk':  { x: 74.4, y: 61.9 },
-        'n-snd':  { x: 74.4, y: 78.5 },
-        'n-ios':  { x: 24.4, y: 70.6 },
-        'bar':    { x: 50.0, y: 92.8 }
+        'n-sig':  { x: 50.0, y: 11.0 },
+        'n-gate': { x: 50.0, y: 27.0 },
+        'n-ign':  { x: 24.5, y: 45.0 },
+        'n-mgr':  { x: 74.5, y: 45.0 },
+        'n-wrk':  { x: 74.5, y: 62.5 },
+        'n-snd':  { x: 74.5, y: 79.0 },
+        'n-ios':  { x: 24.5, y: 71.0 }
       };
 
       const isMobileFlow = () => window.matchMedia('(max-width: 720px)').matches;
+      const cinemaStage = document.getElementById('cinemaStage');
+      const cinemaSvg = document.getElementById('cinemaSvg');
+      const cinemaBar = document.getElementById('cinemaBar');
+      const fpa1 = document.getElementById('fpa-1');
+
+      function boxOf(id) {
+        const el = id === 'bar' ? cinemaBar : document.getElementById(id);
+        const s = cinemaStage.getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        return {
+          l: r.left - s.left,
+          r: r.right - s.left,
+          t: r.top - s.top,
+          b: r.bottom - s.top,
+          cx: r.left - s.left + r.width / 2,
+          cy: r.top - s.top + r.height / 2,
+          w: r.width,
+          h: r.height
+        };
+      }
+
+      function setPath(id, d) {
+        document.getElementById(id)?.setAttribute('d', d);
+      }
 
       function layoutCinemaNodes() {
-        const map = isMobileFlow() ? MOB_POS : DESK_POS;
+        const mob = isMobileFlow();
+        const map = mob ? MOB_POS : DESK_POS;
         ['n-sig', 'n-gate', 'n-ign', 'n-mgr', 'n-wrk', 'n-snd', 'n-ios'].forEach((id) => {
           const el = document.getElementById(id);
           if (!el) return;
           el.style.left = `${map[id].x}%`;
           el.style.top = `${map[id].y}%`;
         });
+
+        const sw = cinemaStage.clientWidth;
+        const sh = cinemaStage.clientHeight;
+        if (!sw || !sh) return;
+        cinemaSvg.setAttribute('viewBox', `0 0 ${sw} ${sh}`);
+
+        const sig = boxOf('n-sig');
+        const gate = boxOf('n-gate');
+        const ign = boxOf('n-ign');
+        const mgr = boxOf('n-mgr');
+        const wrk = boxOf('n-wrk');
+        const snd = boxOf('n-snd');
+        const ios = boxOf('n-ios');
+        const bar = boxOf('bar');
+
+        if (!mob) {
+          // Desktop Landscape — exact node-edge anchoring, zero crossing
+          setPath('fp-sig-gate', `M ${sig.r} ${sig.cy} L ${gate.l} ${gate.cy}`);
+          setPath('fp-gate-ign', `M ${gate.cx} ${gate.b} L ${ign.cx} ${ign.t}`);
+          const gmMid = (gate.r + mgr.l) / 2;
+          setPath('fp-gate-mgr', `M ${gate.r} ${gate.cy - 6} C ${gmMid} ${gate.cy - 6}, ${gmMid} ${mgr.cy}, ${mgr.l} ${mgr.cy}`);
+          setPath('fp-mgr-wrk', `M ${mgr.r} ${mgr.cy} L ${wrk.l} ${wrk.cy}`);
+          setPath('fp-wrk-snd', `M ${wrk.r} ${wrk.cy} L ${snd.l} ${snd.cy}`);
+          setPath('fp-wrk-bar', `M ${wrk.cx} ${wrk.b} C ${wrk.cx} ${wrk.b + 95}, ${bar.cx + 40} ${bar.t - 75}, ${bar.cx} ${bar.t}`);
+          setPath('fp-ssh-ios', `M ${bar.r} ${bar.cy} C ${bar.r + 110} ${bar.cy}, ${ios.cx} ${bar.cy - 15}, ${ios.cx} ${ios.b}`);
+        } else {
+          // Mobile Portrait — clean top-to-bottom lanes, zero crossing
+          setPath('fp-sig-gate', `M ${sig.cx} ${sig.b} L ${gate.cx} ${gate.t}`);
+          setPath('fp-gate-ign', `M ${gate.cx - 26} ${gate.b} C ${gate.cx - 32} ${gate.b + 24}, ${ign.cx} ${ign.t - 24}, ${ign.cx} ${ign.t}`);
+          setPath('fp-gate-mgr', `M ${gate.cx + 26} ${gate.b} C ${gate.cx + 32} ${gate.b + 24}, ${mgr.cx} ${mgr.t - 24}, ${mgr.cx} ${mgr.t}`);
+          setPath('fp-mgr-wrk', `M ${mgr.cx} ${mgr.b} L ${wrk.cx} ${wrk.t}`);
+          setPath('fp-wrk-snd', `M ${wrk.cx} ${wrk.b} L ${snd.cx} ${snd.t}`);
+          setPath('fp-wrk-bar', `M ${wrk.l} ${wrk.cy + 10} C ${bar.cx - 8} ${wrk.cy + 20}, ${bar.cx} ${bar.t - 50}, ${bar.cx} ${bar.t}`);
+          setPath('fp-ssh-ios', `M ${bar.l + 14} ${bar.t} C ${ios.cx} ${bar.t - 10}, ${ios.cx} ${ios.b + 28}, ${ios.cx} ${ios.b}`);
+        }
       }
 
       const scenes = [
@@ -3336,9 +3364,9 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           steps: [
             { t: 0,    at: 'n-sig',  tag: '单聊反馈：回调超时', lit: ['n-sig'],  path: '',         bar: 'done', barTxt: '收到新信号' },
             { t: 900,  at: 'n-gate', tag: '门童语义放行',       lit: ['n-gate'], path: 'sig-gate', bar: 'done', barTxt: '语义放行' },
-            { t: 1700, at: 'n-mgr',  tag: '经理归并并派工',     lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work', barTxt: '● 蓝点亮起 · 小弟已接单' },
-            { t: 2600, at: 'n-wrk',  tag: '小弟排查定位根因',   lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work', barTxt: '● 蓝点 · 工程目录排查中' },
-            { t: 3600, at: 'n-snd',  tag: 'wb send 校验并回执', lit: ['n-snd'],  path: 'wrk-snd',  bar: 'done', barTxt: '● 灰点 · 自动闭环，留痕可查' }
+            { t: 1700, at: 'n-mgr',  tag: '经理归并并派工',     lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work', barTxt: '蓝点亮起 · 小弟已接单' },
+            { t: 2600, at: 'n-wrk',  tag: '小弟排查定位根因',   lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work', barTxt: '蓝点 · 工程目录排查中' },
+            { t: 3600, at: 'n-snd',  tag: 'wb send 校验并回执', lit: ['n-snd'],  path: 'wrk-snd',  bar: 'done', barTxt: '灰点 · 自动闭环，留痕可查' }
           ]
         },
         {
@@ -3347,9 +3375,9 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           color: 'var(--you)',
           steps: [
             { t: 0,    at: 'n-sig',  tag: 'MR：core-api!418',   lit: ['n-sig'],  path: '',         bar: 'done',    barTxt: '收到 MR 评审请求' },
-            { t: 950,  at: 'n-mgr',  tag: '经理派给小弟审查',   lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work',    barTxt: '● 蓝点 · 代码审查中' },
-            { t: 1950, at: 'n-wrk',  tag: '单测通过，需你终审', lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work',    barTxt: '● 蓝点 · 产出评审结论' },
-            { t: 3100, at: 'bar',    tag: '点亮黄点 + 红气泡',  lit: [],         path: 'wrk-bar',  bar: 'you-bub', barTxt: '● 黄点等你 · 悬停一句话放行' }
+            { t: 950,  at: 'n-mgr',  tag: '经理派给小弟审查',   lit: ['n-mgr'],  path: 'gate-mgr', bar: 'work',    barTxt: '蓝点 · 代码审查中' },
+            { t: 1950, at: 'n-wrk',  tag: '单测通过，需你终审', lit: ['n-wrk'],  path: 'mgr-wrk',  bar: 'work',    barTxt: '蓝点 · 产出评审结论' },
+            { t: 3100, at: 'bar',    tag: '点亮黄点 + 红气泡',  lit: [],         path: 'wrk-bar',  bar: 'you-bub', barTxt: '黄点等你 · 悬停一句话放行' }
           ]
         },
         {
@@ -3357,9 +3385,9 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
           caption: 'macOS 键鼠静默满 10 分钟后，未读黄点沿加密 SSH 通道直达 iPhone，通勤原地接管。',
           color: 'var(--wait)',
           steps: [
-            { t: 0,    at: 'bar',    tag: '桌面有未读黄点',       lit: [],        path: '',        bar: 'you-bub', barTxt: '● 桌面黄点未读' },
+            { t: 0,    at: 'bar',    tag: '桌面有未读黄点',       lit: [],        path: '',        bar: 'you-bub', barTxt: '桌面黄点未读' },
             { t: 1200, at: 'bar',    tag: 'HID 静默 ≥ 10 分钟',   lit: [],        path: '',        bar: 'you-bub', barTxt: '检测到已离开电脑…' },
-            { t: 2400, at: 'n-ios',  tag: 'APNs + SSH 90ms 同步', lit: ['n-ios'], path: 'ssh-ios', bar: 'ring',    barTxt: '◎ iPhone 原地接管，桌面同步' }
+            { t: 2400, at: 'n-ios',  tag: 'APNs + SSH 90ms 同步', lit: ['n-ios'], path: 'ssh-ios', bar: 'ring',    barTxt: 'iPhone 原地接管，桌面同步' }
           ]
         }
       ];
@@ -3369,8 +3397,6 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
       let progRaf = null;
       const orb = document.getElementById('signalOrb');
       const orbTag = document.getElementById('signalTag');
-      const dpa1 = document.getElementById('dpa-1');
-      const mpa1 = document.getElementById('mpa-1');
       const cinemaDot = document.getElementById('cinemaDot');
       const cinemaBarText = document.getElementById('cinemaBarText');
       const cinemaProg = document.getElementById('cinemaProg');
@@ -3414,8 +3440,13 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
 
         sc.steps.forEach((st, si) => {
           const id = setTimeout(() => {
-            const mob = isMobileFlow();
-            const pos = (mob ? MOB_POS : DESK_POS)[st.at];
+            setCinemaDot(st.bar);
+            cinemaBarText.textContent = st.barTxt;
+            layoutCinemaNodes();
+
+            const box = boxOf(st.at);
+            const sw = cinemaStage.clientWidth || 1;
+            const xPct = (box.cx / sw) * 100;
 
             allNodes.forEach((nid) => {
               const el = document.getElementById(nid);
@@ -3430,32 +3461,26 @@ WHERE rev &gt; ? ORDER BY rev ASC;</pre>
               }
             });
 
-            if (si > 0) orb.style.transition = 'left 0.78s cubic-bezier(0.16, 1, 0.3, 1), top 0.78s cubic-bezier(0.16, 1, 0.3, 1)';
-            orb.style.left = `${pos.x}%`;
-            orb.style.top = `${pos.y}%`;
+            if (si > 0) orb.style.transition = 'left 0.72s cubic-bezier(0.16, 1, 0.3, 1), top 0.72s cubic-bezier(0.16, 1, 0.3, 1)';
+            // Park orb cleanly on the node's TOP border so title text is never obstructed!
+            orb.style.left = `${box.cx}px`;
+            orb.style.top = `${box.t - 1}px`;
             orbTag.textContent = st.tag;
-            orbTag.classList.toggle('align-left', pos.x < 30);
-            orbTag.classList.toggle('align-right', pos.x > 70);
+            orbTag.classList.toggle('align-left', xPct < 26);
+            orbTag.classList.toggle('align-right', xPct > 74);
 
-            const activePath = mob ? mpa1 : dpa1;
-            const otherPath = mob ? dpa1 : mpa1;
-            otherPath.classList.remove('run');
-            otherPath.setAttribute('d', '');
-            activePath.classList.remove('run');
+            fpa1.classList.remove('run');
             if (st.path) {
-              const src = document.getElementById((mob ? 'mp-' : 'dp-') + st.path);
+              const src = document.getElementById('fp-' + st.path);
               if (src) {
-                activePath.setAttribute('d', src.getAttribute('d'));
-                activePath.style.stroke = sc.color;
-                void activePath.offsetWidth;
-                activePath.classList.add('run');
+                fpa1.setAttribute('d', src.getAttribute('d'));
+                fpa1.style.stroke = sc.color;
+                void fpa1.offsetWidth;
+                fpa1.classList.add('run');
               }
             } else {
-              activePath.setAttribute('d', '');
+              fpa1.setAttribute('d', '');
             }
-
-            setCinemaDot(st.bar);
-            cinemaBarText.textContent = st.barTxt;
           }, st.t);
           sceneTimers.push(id);
         });
